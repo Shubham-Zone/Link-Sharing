@@ -1,27 +1,79 @@
 import { useState } from "react";
+import axios from "axios";
+import Spinner from "./Spinner";
 
 function CreateTopicPage() {
     const [visibility, setVisibility] = useState("Public");
+    const [name, setName] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [msg, setMsg] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError("Token not found");
+            setMsg('');
+            return;
+        }
+        if (!name || !visibility) {
+            setMsg("Please enter all the fields");
+            setError('');
+            return;
+        }
+        try {
+            setLoading(true);
+            const response = await axios.post('http://localhost:8000/api/create-topic',
+                {
+                    "name": name,
+                    "createdBy": "Shubham",
+                    "dateCreated": Date.now(),
+                    "lastUpdated": "2025-01-15",
+                    "visibility": visibility
+                }, {
+                headers: {
+                    'x-auth-token': token
+                }
+            });
+            if(response.status === 200) {
+                console.log(response);
+                setMsg(response.data.msg || 'Topic created successfully');
+                setError('');
+            } else {
+                console.log(response);
+                setError(response.data.msg || 'Something went wrong');
+                setMsg('');
+            }
+        } catch (e) {
+            setError(e.message);
+            setMsg('');
+            return;
+        } finally {
+            setLoading(false);
+        }
+
     };
 
     return (
         <div className="d-flex justify-content-center align-items-center">
             <div className="card p-4 w-100 shadow-lg border-0 rounded-4" style={{ maxWidth: "420px" }}>
                 <h2 className="h4 text-center text-primary fw-bold mb-4">Create Topic</h2>
+                {error && <p className="alert alert-danger text-center">{error}</p>}
+                {msg && <p className="alert alert-success text-center">{msg}</p>}
 
                 <form onSubmit={handleSubmit}>
                     {/* Topic Name Field */}
                     <div className="mb-3">
                         <label htmlFor="topicName" className="form-label fw-semibold">Topic Name*</label>
-                        <input 
-                            type="text" 
-                            className="form-control rounded-3" 
-                            id="topicName" 
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="form-control rounded-3"
+                            id="topicName"
                             placeholder="Enter topic name"
-                            required 
+                            required
                         />
                     </div>
 
@@ -29,9 +81,9 @@ function CreateTopicPage() {
                     <div className="mb-3">
                         <label className="form-label fw-semibold">Visibility*</label>
                         <div className="dropdown w-100">
-                            <button 
-                                className="btn btn-secondary dropdown-toggle w-100 rounded-3" 
-                                type="button" 
+                            <button
+                                className="btn btn-secondary dropdown-toggle w-100 rounded-3"
+                                type="button"
                                 data-bs-toggle="dropdown"
                             >
                                 {visibility}
@@ -45,9 +97,9 @@ function CreateTopicPage() {
 
                     {/* Buttons */}
                     <div className="d-flex gap-2">
-                            <button type="submit" className="btn btn-primary w-100 rounded-3">Save</button>
-                            <button type="submit" className="btn btn-primary w-100 rounded-3">Cancel</button>
-                        </div>
+                        <button type="submit" className="btn btn-primary w-100 rounded-3">{loading ? <Spinner/> : "Save"}</button>
+                        <button type="submit" className="btn btn-primary w-100 rounded-3">Cancel</button>
+                    </div>
                 </form>
             </div>
         </div>

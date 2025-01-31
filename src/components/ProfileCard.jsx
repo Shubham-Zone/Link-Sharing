@@ -19,8 +19,8 @@ function ProfileCard({ img, title, desc }) {
                         <p className="card-text">{desc}</p>
                     </div>
                     <div className="m-auto d-flex gap-3">
-                        
-                        <div>
+
+                        <div className="ml-3">
                             <h5 className="subscription">Subscriptions</h5>
                             <p className="subtotal">50</p>
                         </div>

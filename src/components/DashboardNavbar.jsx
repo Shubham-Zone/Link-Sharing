@@ -1,9 +1,16 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useNavigate } from 'react-router-dom';
-import CreateTopicPage from './CreateTopic';
 
 function DashboardNavbar() {
     const navigate = useNavigate();
+    const user = localStorage.getItem('user');
+
+
+    const logout = () => {
+        localStorage.clear();
+        navigate('/');
+    }
+
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
@@ -46,14 +53,14 @@ function DashboardNavbar() {
                             <i className="bi bi-person-fill fs-4 text-dark"></i>
                             <div className="btn-group ml-3">
                                 <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Shubham
+                                    {user}
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><button class="dropdown-item" type="button">Profile</button></li>
                                     <li><button class="dropdown-item" type="button">Users</button></li>
                                     <li><button class="dropdown-item" type="button">Topics</button></li>
                                     <li><button class="dropdown-item" type="button">Posts</button></li>
-                                    <li><button class="dropdown-item" type="button">Logout</button></li>
+                                    <li><button onClick={() => logout()} class="dropdown-item" type="button">Logout</button></li>
                                 </ul>
                             </div>
                         </div>
