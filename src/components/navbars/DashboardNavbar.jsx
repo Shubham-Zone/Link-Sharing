@@ -1,15 +1,41 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-function DashboardNavbar() {
+function DashboardNavbar({ setStatus }) {
     const navigate = useNavigate();
-    const user = localStorage.getItem('user');
-
+    const user = localStorage.getItem('name');
+    const email = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    const [curUser, setcurUser] = useState(null);
 
     const logout = () => {
         localStorage.clear();
         navigate('/');
     }
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const res = await axios.get('http://localhost:8000/api/user', {
+                    headers: {
+                        "email": email,
+                        "x-auth-token": token
+                    }
+                });
+                if (res.status === 201) {
+                    setcurUser(res.data);
+                    console.log("User data fetched successfully at dashboard", res.data);
+                } else {
+                    console.log("Something went wrong while fetching user data at dashboard", res.data);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        fetchUser();
+    }, []);
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -46,15 +72,15 @@ function DashboardNavbar() {
 
                         {/* Icons */}
                         <div className="d-flex ms-3">
-                            <i onClick={() => navigate('/createTopic')} className="bi bi-chat-fill me-3 fs-4 text-dark"></i>
+                            <i onClick={() => setStatus(prev => ({ ...prev, createTopic: !prev.createTopic }))} className="bi bi-chat-fill me-3 fs-4 text-dark"></i>
                             <i className="bi bi-envelope me-3 fs-4 text-dark"></i>
-                            <i className="bi bi-link me-3 fs-4 text-dark"></i>
-                            <i className="bi bi-file-earmark-plus-fill me-3 fs-4 text-dark"></i>
+                            <i onClick={() => setStatus(prev => ({ ...prev, shareLink: !prev.shareLink }))} className="bi bi-link me-3 fs-4 text-dark"></i>
+                            <i onClick={() => setStatus(prev => ({ ...prev, shareDocs: !prev.shareDocs }))} className="bi bi-file-earmark-plus-fill me-3 fs-4 text-dark"></i>
                             <i className="bi bi-person-fill fs-4 text-dark"></i>
                             <div className="btn-group ml-3">
-                                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {user}
-                                </button>
+                                {curUser && (<button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {curUser.firstName + ' ' + curUser.lastName}
+                                </button>)}
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><button class="dropdown-item" type="button">Profile</button></li>
                                     <li><button class="dropdown-item" type="button">Users</button></li>

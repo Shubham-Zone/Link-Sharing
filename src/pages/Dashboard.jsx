@@ -1,15 +1,24 @@
-import DashboardNavbar from "../components/DashboardNavbar";
-import CreateTopicPage from "../components/CreateTopic";
-import Post from "../components/PostCard";
-import ShareLink from "../components/Sharelink";
-import ShareDocument from "../components/Sharedocument";
-import ProfileCard from "../components/ProfileCard";
+import DashboardNavbar from "../components/navbars/DashboardNavbar";
+import CreateTopicPage from "../components/functions/CreateTopic";
+import Post from "../components/cards/PostCard";
+import SubscribedTopicCard from "../components/cards/SubscribedTopicCard";
+import ShareLink from "../components/functions/Sharelink";
+import ShareDocument from "../components/functions/Sharedocument";
+import ProfileCard from "../components/cards/ProfileCard";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
 function Dashboard() {
 
     const [topics, setTopics] = useState([]);
+    const [subscribedTopics, setsubscribedTopics] = useState([]);
+    const username = localStorage.getItem('user');
+    const [status, setStatus] = useState({
+        shareLink: false,
+        shareDocs: false,
+        createTopic: false,
+    });
+
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -33,13 +42,35 @@ function Dashboard() {
             }
         };
 
+        const fetchSubscibedTopics = async () => {
+            try {
+                const response = await axios.get("http://localhost:8000/api/subscribed-topics", {
+                    headers: {
+                        "x-auth-token": token,
+                        "user": username
+                    },
+                });
+
+                if (response.status === 200) {
+                    console.log(response.data.length);
+                    setsubscribedTopics(response.data);
+                    console.log(response.data);
+                } else {
+                    console.log(response);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
         fetchTopics();
+        fetchSubscibedTopics();
     }, []);
 
     return (
         <>
             <div className="container-fluid bg-white min-vh-100">
-                <DashboardNavbar />
+                <DashboardNavbar setStatus={setStatus} />
 
                 <div className="container py-2 mt-4">
                     <div className="row d-flex flex-row align-items-start justify-items-start">
@@ -47,27 +78,27 @@ function Dashboard() {
                         {/* Left Section (Recent-shares + top posts) */}
                         <div className="col-lg-8 gap-10">
 
-                            <ProfileCard img={''} title={'Shubham Kumar'} desc={'demo'} />
+                            <ProfileCard />
 
+                            {/*Subscribed Topics*/}
                             <div className="d-flex border border-3 border-secondary flex-column gap-3 mx-auto p-10 mb-3">
                                 <label className='fs-3' htmlFor="">Subscriptions</label>
-                                <Post img={''} title={'Post 1'} desc={'This is a demo post.'} />
-                                <Post img={''} title={'Post 2'} desc={'This is a demo post.'} />
-                                <Post img={''} title={'Post 3'} desc={'This is a demo post.'} />
-                                <Post img={''} title={'Post 4'} desc={'This is a demo post.'} />
+                                {
+                                    subscribedTopics.map((topic) =>
+
+                                        <SubscribedTopicCard user={topic.user} img={''} type={'sub'} name={topic.topicData.name} createdBy={topic.topicData.createdBy} visibility={topic.topicData.visibility} />
+                                    )
+                                }
                             </div>
 
+                            {/*Trending Topics*/}
                             <div className="d-flex border border-3 border-secondary flex-column gap-3 mx-auto p-10 mb-3">
                                 <label className='fs-3' htmlFor="">Trending topics</label>
                                 {
-                                    topics.map((topic) => 
-                                        <Post img={''} name={topic.name} createdBy={topic.createdBy} visibility={topic.visibility} />
+                                    topics.map((topic) =>
+                                        <Post type={'pub'} user={username} img={''} name={topic.name} createdBy={topic.createdBy} visibility={topic.visibility} />
                                     )
                                 }
-                                {/* <Post img={''} title={'Post 1'} desc={'This is a demo post.'} />
-                                <Post img={''} title={'Post 2'} desc={'This is a demo post.'} />
-                                <Post img={''} title={'Post 3'} desc={'This is a demo post.'} />
-                                <Post img={''} title={'Post 4'} desc={'This is a demo post.'} /> */}
                             </div>
 
                             <br /> <br />
@@ -84,9 +115,9 @@ function Dashboard() {
                                 <Post img={''} title={'Post 4'} desc={'This is a demo post.'} />
                             </div>
                             <div className="d-flex flex-column gap-3">
-                                <ShareLink />
-                                <ShareDocument />
-                                <CreateTopicPage />
+                                {status.shareLink && (<ShareLink />)}
+                                {status.shareDocs && (<ShareDocument />)}
+                                {status.createTopic && (<CreateTopicPage />)}
                             </div>
                         </div>
 

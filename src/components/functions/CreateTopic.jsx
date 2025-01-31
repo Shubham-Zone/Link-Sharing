@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import Spinner from "./Spinner";
+import Spinner from "../Spinner";
 
 function CreateTopicPage() {
     const [visibility, setVisibility] = useState("Public");

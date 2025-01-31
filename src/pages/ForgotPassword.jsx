@@ -15,13 +15,6 @@ function ForgotPasswordPage() {
     const handleResetPassword = async () => {
         try {
             setLoading(true);
-            const token = localStorage.getItem("token");
-            if (!token) {
-                setError("Token not found.");
-                setMsg('');
-                alert("Token not found.");
-                return;
-            }
             if (!email) {
                 setMsg("Please enter your email");
                 setError('');
@@ -30,11 +23,6 @@ function ForgotPasswordPage() {
             const response = await axios.post("http://localhost:8000/api/requestPasswordReset",
                 {
                     "email": email
-                },
-                {
-                    headers: {
-                        "x-auth-token": token
-                    }
                 }
             );
             if (response.status === 200) {
@@ -46,7 +34,8 @@ function ForgotPasswordPage() {
                 setError('');
             }
         } catch (e) {
-            setError(e.response.data.msg || 'Something went wrong');
+            console.log(e);
+            setError('Something went wrong');
             setMsg('');
         } finally {
             setLoading(false);

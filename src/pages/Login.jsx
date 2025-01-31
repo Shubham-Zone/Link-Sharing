@@ -101,13 +101,6 @@ const LoginPage = () => {
                     >
                         Forgot password?
                     </button>
-                    <button
-                        type="button"
-                        onClick={() => navigate("/register")}
-                        className="btn btn-link"
-                    >
-                        Register
-                    </button>
                 </div>
             </form>
         </div>

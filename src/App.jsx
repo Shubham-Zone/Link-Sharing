@@ -4,7 +4,7 @@ import IndexPage from './pages/Index';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ForgotPasswordPage from './pages/ForgotPassword';
 import ResetPasswordPage from './pages/ResetPassword';
-import CreateTopicPage from './components/CreateTopic';
+import CreateTopicPage from './components/functions/CreateTopic';
 
 
 function App() {

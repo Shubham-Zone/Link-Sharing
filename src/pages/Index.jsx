@@ -1,7 +1,7 @@
 import LoginPage from './Login';
 import RegisterPage from './Register';
-import Post from '../components/PostCard';
-import Navbar from '../components/NavBar';
+import Post from '../components/cards/PostCard';
+import Navbar from '../components/navbars/NavBar';
 
 function IndexPage() {
     return (

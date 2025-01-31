@@ -43,6 +43,8 @@ const RegisterPage = () => {
                 },
             });
             alert(res.data.msg);
+            localStorage.setItem('username', formData.userName);
+            localStorage.setItem('name', formData.firstName + ' ' + formData.lastName);
         } catch (err) {
             console.error(err);
             alert(err.response?.data?.msg || "An error occurred!");
