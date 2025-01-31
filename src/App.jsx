@@ -6,7 +6,6 @@ import ForgotPasswordPage from './pages/ForgotPassword';
 import ResetPasswordPage from './pages/ResetPassword';
 import CreateTopicPage from './components/functions/CreateTopic';
 
-
 function App() {
   return (
     <>
@@ -17,11 +16,7 @@ function App() {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/resetpassword" element={<ResetPasswordPage />} />
-          <Route path='/createTopic' element={<CreateTopicPage/>} />
-          {/* <Route index element={<Home />} />
-            <Route path="blogs" element={<Blogs />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="*" element={<NoPage />} /> */}
+          <Route path='/createTopic' element={<CreateTopicPage />} />
         </Routes>
       </BrowserRouter>
     </>
