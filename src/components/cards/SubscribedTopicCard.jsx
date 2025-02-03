@@ -1,8 +1,35 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const SubscribedTopicCard = ({ img, user, name, createdBy, visibility, type }) => {
+const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, visibility, type }) => {
+
+    const [count, setCount] = useState(0);
+    const [seriousness, setSeriousness] = useState('Serious');
+    const [vis, setVisibility] = useState('Public');
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedName, setEditedName] = useState(name);
+
+    useEffect(() => {
+        const countSubscriptions = async () => {
+            try {
+                const res = await axios.get(`http://localhost:8000/api/subscription-count/${topic_id}`, {
+                    headers: {
+                        "x-auth-token": token,
+                    }
+                });
+                if (res.status === 200) {
+                    console.log("Count is:", res.data);
+                    setCount(res.data.cnt);
+                } else {
+                    console.log('Something went wrong', res.data);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        };
+        countSubscriptions();
+    }, [])
 
     const token = localStorage.getItem('token');
     const curUser = localStorage.getItem('user');
@@ -15,6 +42,7 @@ const SubscribedTopicCard = ({ img, user, name, createdBy, visibility, type }) =
         try {
             const res = await axios.post('http://localhost:8000/api/subscribe',
                 {
+                    "topic_id": topic_id,
                     "topic": name,
                     "user": user,
                     "seriousness": "serious",
@@ -36,6 +64,73 @@ const SubscribedTopicCard = ({ img, user, name, createdBy, visibility, type }) =
         }
     };
 
+    const unsubscribeTopic = async () => {
+        try {
+            console.log("Token is", token);
+            const res = await axios.delete('http://localhost:8000/api/unsubscribe', {
+                headers: {
+                    "x-auth-token": token
+                },
+                data: {
+                    topic_id: topic_id
+                }
+            });
+
+            if (res.status === 200) {
+                alert(`${name} topic unsubscribed successfully`);
+                window.location.reload();
+            } else {
+                console.log('Error while unsubscribe', res.data);
+            }
+        } catch (e) {
+            console.log('Error while deleting the topic', e);
+        }
+    };
+
+    const deleteTopic = async () => {
+        try {
+            const res = await axios.delete('http://localhost:8000/api/delete-topic', {
+                headers: {
+                    "x-auth-token": token
+                },
+                data: {
+                    topic_id: topic_id
+                }
+            });
+            if (res.status === 200) {
+                alert('Topic deleted successfully');
+                window.location.reload();
+            } else {
+                console.log('Error while deleting topic ', res.data);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    const updateTopic = async () => {
+        try {
+            const res = await axios.put('http://localhost:8000/api/update-topic',
+                {
+                    'topicId': topic_id,
+                    'newName': editedName
+                },
+                {
+                    headers: {
+                        "x-auth-token": token
+                    }
+                });
+            if (res.status === 200) {
+                alert('Topic updated successfully');
+                console.log('Updated successfully', res.data);
+            } else {
+                console.log('Error while updating topic', res.data);
+            }
+        } catch (e) {
+            console.log('Error while updating topic', e);
+        }
+    };
+
     return (
         <div className="card mb-3 mx-4 p-3 shadow" style={{ maxWidth: "540px" }}>
 
@@ -52,51 +147,96 @@ const SubscribedTopicCard = ({ img, user, name, createdBy, visibility, type }) =
 
                 <div className="col-md-8">
                     <div className="card-body">
-                        <h5 className="card-title">{name}</h5>
+                        <h5 className="card-title">
+                            {isEditing ? (
+                                <div className="row">
+                                    <input
+                                        type="text"
+                                        value={editedName}
+                                        onChange={(e) => setEditedName(e.target.value)}
+                                        className="form-control col"
+                                    />
+                                    <div className="col d-flex gap-2">
+                                        <button
+                                            onClick={() => { updateTopic(); setIsEditing(false); }}
+                                            type="button"
+                                            className="btn btn-success"
+                                        >
+                                            Apply
+                                        </button>
+                                        <button
+                                            onClick={() => setIsEditing(false)}
+                                            type="button"
+                                            className="btn btn-primary"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+
+                                </div>
+                            ) : (
+                                editedName
+                            )}
+                        </h5>
                         <p className="card-text text-muted">{createdBy}</p>
                         <div className="d-flex justify-content-between">
                             <p className="mb-0"><strong>Posts:</strong> 120</p>
-                            <p className="mb-0"><strong>Subscriptions:</strong> 500</p>
+                            <p className="mb-0"><strong>Subscriptions:</strong> {count}</p>
                         </div>
                         <div className="d-flex justify-content-between">
                             <p className="mb-0"><strong>Visibility:</strong> {visibility}</p>
                         </div>
                         <br />
                         <div class="row g-3 align-items-center">
-                            <div class="col d-flex justify-content-center">
-                                <div class="btn-group">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Serious
+
+                            <div className="col d-flex justify-content-center">
+                                <div className="btn-group">
+                                    <button
+                                        className="btn btn-secondary dropdown-toggle"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                    >
+                                        {seriousness}
                                     </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Menu item</a></li>
-                                        <li><a class="dropdown-item" href="#">Menu item</a></li>
-                                        <li><a class="dropdown-item" href="#">Menu item</a></li>
+                                    <ul className="dropdown-menu">
+                                        <li><button className="dropdown-item" onClick={() => setSeriousness("Serious")}>Serious</button></li>
+                                        <li><button className="dropdown-item" onClick={() => setSeriousness("Very Serious")}>Very Serious</button></li>
+                                        <li><button className="dropdown-item" onClick={() => setSeriousness("Casual")}>Casual</button></li>
                                     </ul>
                                 </div>
                             </div>
 
-                            <div class="col d-flex justify-content-center">
-                                <div class="btn-group">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Private
+                            <div className="col d-flex justify-content-center">
+                                <div className="btn-group">
+                                    <button
+                                        className="btn btn-secondary dropdown-toggle"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                    >
+                                        {vis}
                                     </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#">Menu item</a></li>
-                                        <li><a class="dropdown-item" href="#">Menu item</a></li>
-                                        <li><a class="dropdown-item" href="#">Menu item</a></li>
+                                    <ul className="dropdown-menu">
+                                        <li><button className="dropdown-item" onClick={() => setVisibility("Public")}>Public</button></li>
+                                        <li><button className="dropdown-item" onClick={() => setVisibility("Private")}>Private</button></li>
                                     </ul>
                                 </div>
                             </div>
+
 
                             <div class="col d-flex justify-content-center">
                                 <div class="d-flex align-items-center gap-3">
                                     <i class="bi bi-envelope text-primary" style={{ fontSize: '1.5rem' }}></i>
                                     <div class="d-flex gap-2">
-                                        {curUser === user && (
+                                        {curUser === createdBy && (
                                             <>
-                                                <i class="bi bi-pencil-square text-warning" style={{ fontSize: '1.3rem' }}></i>
-                                                <i class="bi bi-trash text-danger" style={{ fontSize: '1.3rem' }}></i>
+                                                <i
+                                                    onClick={() => setIsEditing(!isEditing)}
+                                                    className={`bi bi-pencil-square ${isEditing ? 'text-success' : 'text-warning'}`}
+                                                    style={{ fontSize: '1.3rem' }}
+                                                ></i>
+                                                <i class="bi bi-trash text-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" style={{ fontSize: '1.3rem' }}></i>
                                             </>
                                         )}
                                     </div>
@@ -104,9 +244,24 @@ const SubscribedTopicCard = ({ img, user, name, createdBy, visibility, type }) =
                             </div>
                         </div>
 
+                        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-hidden="true">
+                            <div className="modal-dialog">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title">Confirm Delete</h5>
+                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div className="modal-body">Are you sure you want to proceed?</div>
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button onClick={() => deleteTopic()} type="button" className="btn btn-primary">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <br />
-                        <button onClick={() => subscribeTopic()} type="button" class="btn btn-primary">{type === 'sub' ? 'Unsubscribe' : 'Subscribe'}</button>
+                        <button onClick={() => { type === 'sub' ? unsubscribeTopic() : subscribeTopic() }} type="button" class="btn btn-primary">{type === 'sub' ? 'Unsubscribe' : 'Subscribe'}</button>
                     </div>
                 </div>
             </div>

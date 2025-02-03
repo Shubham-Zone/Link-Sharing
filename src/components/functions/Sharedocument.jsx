@@ -1,12 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function ShareDocument() {
 
     const [topic, setTopic] = useState('Topics');
+    const [error, setError] = useState('');
+    const [msg, setMsg] = useState('');
+    const [topics, setTopics] = useState(null);
+    const token = localStorage.getItem('token');
 
     const handleSubmit = () => {
 
     };
+
+    useEffect(() => {
+        const fetchTopics = async () => {
+            try {
+                const res = await axios.get('http://localhost:8000/api/topics', {
+                    headers: {
+                        "x-auth-token": token
+                    }
+                });
+
+                if (res.status === 200) {
+                    console.log('Topics fetched successfully', res);
+                    setTopics(res.data);
+                } else {
+                    setError(res.data.msg || 'Something went wrong while fetching topics');
+                    setMsg('');
+                }
+            } catch (e) {
+                setError(e.message);
+                setMsg('');
+            }
+        };
+        fetchTopics();
+    }, []);
 
     return (
         <>
@@ -51,8 +80,11 @@ function ShareDocument() {
                                     {topic}
                                 </button>
                                 <ul className="dropdown-menu w-100">
-                                    <li><button className="dropdown-item" onClick={() => setTopic("Topic1")} type="button">Topic1</button></li>
-                                    <li><button className="dropdown-item" onClick={() => setTopic("Topic2")} type="button">Topic2</button></li>
+                                    {
+                                        topics && topics.map((topic) =>
+                                            <li><button className="dropdown-item" onClick={() => setTopic(topic.name)} type="button">{topic.name}</button></li>
+                                        )
+                                    }
                                 </ul>
                             </div>
                         </div>

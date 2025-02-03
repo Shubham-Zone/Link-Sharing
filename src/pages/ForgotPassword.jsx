@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Spinner from "../components/Spinner";
+import Spinner from '../components/helpers/Spinner';
 import axios from "axios";
 
 function ForgotPasswordPage() {

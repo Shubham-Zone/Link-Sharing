@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import Spinner from "../Spinner";
+import Spinner from '../helpers/Spinner';
 
 function CreateTopicPage() {
     const [visibility, setVisibility] = useState("Public");
@@ -8,6 +8,8 @@ function CreateTopicPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [msg, setMsg] = useState('');
+
+    const curUser = localStorage.getItem('user');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,9 +29,9 @@ function CreateTopicPage() {
             const response = await axios.post('http://localhost:8000/api/create-topic',
                 {
                     "name": name,
-                    "createdBy": "Shubham",
+                    "createdBy": curUser,
                     "dateCreated": Date.now(),
-                    "lastUpdated": "2025-01-15",
+                    "lastUpdated": Date.now(),
                     "visibility": visibility
                 }, {
                 headers: {
@@ -40,6 +42,7 @@ function CreateTopicPage() {
                 console.log(response);
                 setMsg(response.data.msg || 'Topic created successfully');
                 setError('');
+                window.location.reload();
             } else {
                 console.log(response);
                 setError(response.data.msg || 'Something went wrong');
