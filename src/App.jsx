@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ForgotPasswordPage from './pages/ForgotPassword';
 import ResetPasswordPage from './pages/ResetPassword';
 import CreateTopicPage from './components/functions/CreateTopic';
+import Post from './pages/Posts';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/resetpassword" element={<ResetPasswordPage />} />
           <Route path='/createTopic' element={<CreateTopicPage />} />
+          <Route path="/posts/:id" element={<Post />} />
         </Routes>
       </BrowserRouter>
     </>

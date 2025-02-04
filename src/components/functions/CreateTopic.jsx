@@ -26,7 +26,7 @@ function CreateTopicPage() {
         }
         try {
             setLoading(true);
-            const response = await axios.post('http://localhost:8000/api/create-topic',
+            const response = await axios.post(`${import.meta.env?.VITE_BASE_URL}/create-topic`,
                 {
                     "name": name,
                     "createdBy": curUser,

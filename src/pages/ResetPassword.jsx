@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axios from "axios";
+import { resetPassword } from "../api/auth";
 
 const ResetPasswordPage = () => {
     const [password, setPassword] = useState("");
@@ -28,13 +28,7 @@ const ResetPasswordPage = () => {
         }
 
         try {
-            const res = await axios.post(
-                "http://localhost:8000/api/resetPassword",
-                { id, token, password },
-                {
-                    headers: { "Content-Type": "application/json" }
-                }
-            );
+            const res = await resetPassword(id, token, password);
             setMessage(res.data.msg);
             setTimeout(() => navigate("/"), 3000);
         } catch (err) {

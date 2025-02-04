@@ -1,23 +1,29 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import axios from "axios";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+    subscribeTopic, unsubscribeTopic, deleteTopic,
+    updateTopic, countSubscriptions
+} from "../../api/topic";
+import { addPost, countPosts } from "../../api/post";
+import { token } from "../../utils/localstore";
+import { username } from "../../utils/localstore";
 
-const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, visibility, type }) => {
+const SubscribedTopicCard = ({ topic, type }) => {
 
     const [count, setCount] = useState(0);
     const [seriousness, setSeriousness] = useState('Serious');
     const [vis, setVisibility] = useState('Public');
     const [isEditing, setIsEditing] = useState(false);
-    const [editedName, setEditedName] = useState(name);
+    const [editedName, setEditedName] = useState(topic.topicData.name);
+    const [content, setContent] = useState('');
+    const [posts, setPosts] = useState(0);
 
     useEffect(() => {
-        const countSubscriptions = async () => {
+        console.log("Topic id is", topic.topicData._id);
+        const handleCountSubscriptions = async () => {
             try {
-                const res = await axios.get(`http://localhost:8000/api/subscription-count/${topic_id}`, {
-                    headers: {
-                        "x-auth-token": token,
-                    }
-                });
+                const res = await countSubscriptions(topic.topicData._id);
                 if (res.status === 200) {
                     console.log("Count is:", res.data);
                     setCount(res.data.cnt);
@@ -28,34 +34,38 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
                 console.log(e);
             }
         };
-        countSubscriptions();
+
+        const handleCountPosts = async () => {
+            try {
+                const res = await countPosts(topic.topicData._id);
+                if (res.status === 200) {
+                    console.log("Posts data fetched successfully", res.data);
+                    setPosts(res.data.length);
+                } else {
+                    console.log("Error while fetching posts", res.data.msg);
+                }
+            } catch (e) {
+                console.log("Error while fetching posts", e);
+            }
+        };
+        handleCountPosts();
+        handleCountSubscriptions();
     }, [])
 
-    const token = localStorage.getItem('token');
-    const curUser = localStorage.getItem('user');
+    const curUser = username;
 
-    const subscribeTopic = async () => {
+    const handleSubscribeTopic = async () => {
         if (!token) {
             alert("Token not found");
             return;
         }
         try {
-            const res = await axios.post('http://localhost:8000/api/subscribe',
-                {
-                    "topic_id": topic_id,
-                    "topic": name,
-                    "user": user,
-                    "seriousness": "serious",
-                    "dateCreated": "2025-01-12"
-                },
-                {
-                    headers: {
-                        "x-auth-token": token
-                    }
-                }
-            );
+            const res = await subscribeTopic(topic.topicData._id, topic.topicData.name, topic.user);
+            console.log(user);
             if (res.status === 200) {
+                alert(`Subscribed to topic ${topic.topicData.name} successfully`);
                 console.log("Subscribed", res);
+                window.location.reload();
             } else {
                 console.log("Something went wrong", res);
             }
@@ -64,17 +74,10 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
         }
     };
 
-    const unsubscribeTopic = async () => {
+    const handleUnsubscribeTopic = async () => {
         try {
             console.log("Token is", token);
-            const res = await axios.delete('http://localhost:8000/api/unsubscribe', {
-                headers: {
-                    "x-auth-token": token
-                },
-                data: {
-                    topic_id: topic_id
-                }
-            });
+            const res = await unsubscribeTopic(topic.topicData._id);
 
             if (res.status === 200) {
                 alert(`${name} topic unsubscribed successfully`);
@@ -87,16 +90,9 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
         }
     };
 
-    const deleteTopic = async () => {
+    const handleDeleteTopic = async () => {
         try {
-            const res = await axios.delete('http://localhost:8000/api/delete-topic', {
-                headers: {
-                    "x-auth-token": token
-                },
-                data: {
-                    topic_id: topic_id
-                }
-            });
+            const res = await deleteTopic(topic.topicData._id);
             if (res.status === 200) {
                 alert('Topic deleted successfully');
                 window.location.reload();
@@ -108,18 +104,9 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
         }
     };
 
-    const updateTopic = async () => {
+    const handleUpdateTopic = async () => {
         try {
-            const res = await axios.put('http://localhost:8000/api/update-topic',
-                {
-                    'topicId': topic_id,
-                    'newName': editedName
-                },
-                {
-                    headers: {
-                        "x-auth-token": token
-                    }
-                });
+            const res = await updateTopic(topic.topicData._id, editedName);
             if (res.status === 200) {
                 alert('Topic updated successfully');
                 console.log('Updated successfully', res.data);
@@ -128,6 +115,23 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
             }
         } catch (e) {
             console.log('Error while updating topic', e);
+        }
+    };
+
+    const handleAddPost = async () => {
+        console.log("Adding post to topic", topic.topicData._id);
+        try {
+            const res = await addPost(topic.topicData._id, content, topic.topicData.createdBy, topic.user, topic.topicData.name);
+
+            if (res.status === 200) {
+                alert('Post created successfully');
+                console.log(res.data);
+                console.log(res.data.msg);
+            } else {
+                console.log("Error while creating post", res.data);
+            }
+        } catch (e) {
+            console.log("Error while posting", e);
         }
     };
 
@@ -158,7 +162,7 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
                                     />
                                     <div className="col d-flex gap-2">
                                         <button
-                                            onClick={() => { updateTopic(); setIsEditing(false); }}
+                                            onClick={() => { handleUpdateTopic(); setIsEditing(false); }}
                                             type="button"
                                             className="btn btn-success"
                                         >
@@ -178,13 +182,13 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
                                 editedName
                             )}
                         </h5>
-                        <p className="card-text text-muted">{createdBy}</p>
+                        <p className="card-text text-muted">{topic.topicData.createdBy}</p>
                         <div className="d-flex justify-content-between">
-                            <p className="mb-0"><strong>Posts:</strong> 120</p>
+                            <p className="mb-0"><strong>Posts:</strong> {posts}</p>
                             <p className="mb-0"><strong>Subscriptions:</strong> {count}</p>
                         </div>
                         <div className="d-flex justify-content-between">
-                            <p className="mb-0"><strong>Visibility:</strong> {visibility}</p>
+                            <p className="mb-0"><strong>Visibility:</strong> {topic.topicData.visibility}</p>
                         </div>
                         <br />
                         <div class="row g-3 align-items-center">
@@ -224,12 +228,11 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
                                 </div>
                             </div>
 
-
                             <div class="col d-flex justify-content-center">
                                 <div class="d-flex align-items-center gap-3">
                                     <i class="bi bi-envelope text-primary" style={{ fontSize: '1.5rem' }}></i>
                                     <div class="d-flex gap-2">
-                                        {curUser === createdBy && (
+                                        {username === topic.topicData.createdBy && (
                                             <>
                                                 <i
                                                     onClick={() => setIsEditing(!isEditing)}
@@ -241,6 +244,12 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
                                         )}
                                     </div>
                                 </div>
+                            </div>
+
+                            <div className="d-flex col gap-2">
+                                <button onClick={() => { type === 'sub' ? handleUnsubscribeTopic() : handleSubscribeTopic() }} type="button" class="btn btn-primary">{type === 'sub' ? 'Unsubscribe' : 'Subscribe'}</button>
+                                <i class="bi bi-file-earmark-plus-fill" data-bs-toggle="modal" data-bs-target="#postModal" style={{ fontSize: '2.0rem' }}></i>
+                                <Link to={`/posts/${topic.topicData._id}`} className="btn btn-primary">Posts</Link>
                             </div>
                         </div>
 
@@ -254,14 +263,45 @@ const SubscribedTopicCard = ({ topic_id, sub_id, img, user, name, createdBy, vis
                                     <div className="modal-body">Are you sure you want to proceed?</div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button onClick={() => deleteTopic()} type="button" className="btn btn-primary">Delete</button>
+                                        <button onClick={() => handleDeleteTopic()} type="button" className="btn btn-primary" data-bs-dismiss="modal">Delete</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <br />
-                        <button onClick={() => { type === 'sub' ? unsubscribeTopic() : subscribeTopic() }} type="button" class="btn btn-primary">{type === 'sub' ? 'Unsubscribe' : 'Subscribe'}</button>
+                        <div className="modal fade" id="postModal" tabIndex="-1" aria-hidden="true">
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content rounded-4 shadow-lg">
+                                    {/* Modal Header */}
+                                    <div className="modal-header bg-primary text-white rounded-top">
+                                        <h5 className="modal-title mx-auto fw-bold">Create a Post</h5>
+                                        <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+
+                                    {/* Modal Body */}
+                                    <div className="modal-body p-8">
+                                        <input
+                                            type="text"
+                                            value={content}
+                                            onChange={(e) => setContent(e.target.value)}
+                                            className="form-control p-3 rounded-3 border-light shadow-sm bg-light"
+                                            placeholder="What's on your mind?"
+                                        />
+                                    </div>
+
+                                    {/* Modal Footer */}
+                                    <div className="modal-footer d-flex justify-content-between border-0 px-4 pb-3">
+                                        <button type="button" className="btn btn-outline-secondary px-4 py-2 rounded-pill" data-bs-dismiss="modal">
+                                            Close
+                                        </button>
+                                        <button onClick={() => handleAddPost()} type="button" className="btn btn-primary px-4 py-2 rounded-pill shadow-sm" data-bs-dismiss="modal">
+                                            Post
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

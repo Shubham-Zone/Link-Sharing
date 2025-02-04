@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { register } from "../api/auth";
 
 const RegisterPage = () => {
     const [loading, setLoading] = useState(false);
@@ -37,16 +38,11 @@ const RegisterPage = () => {
 
         try {
             setLoading(true);
-            const res = await axios.post("http://localhost:8000/api/register", data, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            const res = await register(data);
             alert(res.data.msg);
             localStorage.setItem('username', formData.userName);
             localStorage.setItem('name', formData.firstName + ' ' + formData.lastName);
         } catch (err) {
-            console.error(err);
             alert(err.response?.data?.msg || "An error occurred!");
         } finally {
             setLoading(false);

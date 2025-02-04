@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Spinner from '../components/helpers/Spinner';
 import axios from "axios";
+import { requestPasswordReset } from "../api/auth";
 
 function ForgotPasswordPage() {
     const [email, setEmail] = useState('');
@@ -20,11 +21,7 @@ function ForgotPasswordPage() {
                 setError('');
                 return;
             }
-            const response = await axios.post("http://localhost:8000/api/requestPasswordReset",
-                {
-                    "email": email
-                }
-            );
+            const response = await requestPasswordReset(email);
             if (response.status === 200) {
                 setMsg(response.data.msg || 'Password reset email sent successfully.');
                 setError('');

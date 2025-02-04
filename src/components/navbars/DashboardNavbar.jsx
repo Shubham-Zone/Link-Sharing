@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function DashboardNavbar({ setStatus }) {
+function DashboardNavbar({ status, setStatus }) {
     const navigate = useNavigate();
     const user = localStorage.getItem('name');
     const email = localStorage.getItem('user');
@@ -18,7 +18,7 @@ function DashboardNavbar({ setStatus }) {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get('http://localhost:8000/api/user', {
+                const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/user`, {
                     headers: {
                         "email": email,
                         "x-auth-token": token
@@ -72,10 +72,10 @@ function DashboardNavbar({ setStatus }) {
 
                         {/* Icons */}
                         <div className="d-flex ms-3">
-                            <i onClick={() => setStatus(prev => ({ ...prev, createTopic: !prev.createTopic }))} className="bi bi-chat-fill me-3 fs-4 text-dark"></i>
+                            <i onClick={() => setStatus(prev => ({ ...prev, createTopic: !prev.createTopic }))} className={`bi bi-chat-fill me-3 fs-4 ${status.createTopic ? 'text-success' : 'text-dark'}`}></i>
                             <i className="bi bi-envelope me-3 fs-4 text-dark"></i>
-                            <i onClick={() => setStatus(prev => ({ ...prev, shareLink: !prev.shareLink }))} className="bi bi-link me-3 fs-4 text-dark"></i>
-                            <i onClick={() => setStatus(prev => ({ ...prev, shareDocs: !prev.shareDocs }))} className="bi bi-file-earmark-plus-fill me-3 fs-4 text-dark"></i>
+                            <i onClick={() => setStatus(prev => ({ ...prev, shareLink: !prev.shareLink }))} className={`bi bi-link me-3 fs-4 ${status.shareLink ? 'text-success' : 'text-dark'}`}></i>
+                            <i onClick={() => setStatus(prev => ({ ...prev, shareDocs: !prev.shareDocs }))} className={`bi bi-file-earmark-plus-fill me-3 fs-4 ${status.shareDocs ? 'text-success' : 'text-dark'}`}></i>
                             <i className="bi bi-person-fill fs-4 text-dark"></i>
                             <div className="btn-group ml-3">
                                 {curUser && (<button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

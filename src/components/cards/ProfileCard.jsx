@@ -14,7 +14,7 @@ function ProfileCard() {
         const token = localStorage.getItem("token");
         const fetchTopics = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/api/topics", {
+                const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/topics`, {
                     headers: {
                         "x-auth-token": token,
                     },
@@ -33,7 +33,7 @@ function ProfileCard() {
 
         const fetchSubscibedTopics = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/api/subscribed-topics", {
+                const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/subscribed-topics`, {
                     headers: {
                         "x-auth-token": token,
                         "user": username
@@ -54,7 +54,7 @@ function ProfileCard() {
 
         const fetchUser = async () => {
             try {
-                const res = await axios.get('http://localhost:8000/api/user', {
+                const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/user`, {
                     headers: {
                         "email": username,
                         "x-auth-token": token

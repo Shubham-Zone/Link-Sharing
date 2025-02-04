@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Spinner from '../components/helpers/Spinner';
+import { login } from "../api/auth";
 
 const LoginPage = () => {
     const [error, setError] = useState("");
@@ -27,22 +28,12 @@ const LoginPage = () => {
             alert("Please enter all the details.");
             return;
         }
-
         try {
             setLoading(true);
-            const res = await axios.post("http://localhost:8000/api/login", {
-                userName: email,
-                password: password
-            }, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
+            const res = await login(email, password);
             setMsg(res.data);
             localStorage.setItem('user', email);
             localStorage.setItem('token', res.data.token);
-            console.log(res.data);
             navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.msg || "An error occurred!");
