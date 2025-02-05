@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import Spinner from '../helpers/Spinner';
+import { createTopic } from "../../api/topic";
 
 function CreateTopicPage() {
     const [visibility, setVisibility] = useState("Public");
@@ -8,8 +8,6 @@ function CreateTopicPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [msg, setMsg] = useState('');
-
-    const curUser = localStorage.getItem('user');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,20 +24,8 @@ function CreateTopicPage() {
         }
         try {
             setLoading(true);
-            const response = await axios.post(`${import.meta.env?.VITE_BASE_URL}/create-topic`,
-                {
-                    "name": name,
-                    "createdBy": curUser,
-                    "dateCreated": Date.now(),
-                    "lastUpdated": Date.now(),
-                    "visibility": visibility
-                }, {
-                headers: {
-                    'x-auth-token': token
-                }
-            });
+            const response = await createTopic(name, visibility);
             if(response.status === 200) {
-                console.log(response);
                 setMsg(response.data.msg || 'Topic created successfully');
                 setError('');
                 window.location.reload();

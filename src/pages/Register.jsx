@@ -1,5 +1,4 @@
 import { useState } from "react";
-import axios from "axios";
 import { register } from "../api/auth";
 
 const RegisterPage = () => {

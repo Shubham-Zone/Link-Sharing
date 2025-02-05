@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Spinner from '../components/helpers/Spinner';
 import { login } from "../api/auth";
 

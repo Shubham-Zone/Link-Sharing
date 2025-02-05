@@ -5,15 +5,14 @@ import SubscribedTopicCard from "../components/cards/SubscribedTopicCard";
 import ShareLink from "../components/functions/Sharelink";
 import ShareDocument from "../components/functions/Sharedocument";
 import ProfileCard from "../components/cards/ProfileCard";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { fetchTopics, fetchSubscibedTopics } from "../api/topic";
 
 function Dashboard() {
 
     const [topics, setTopics] = useState([]);
     const [subscribedTopics, setsubscribedTopics] = useState([]);
-    const username = localStorage.getItem('user');
     const [status, setStatus] = useState({
         shareLink: false,
         shareDocs: false,
@@ -21,19 +20,12 @@ function Dashboard() {
     });
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        console.log('token is: ', token);
-        const fetchTopics = async () => {
+        const handleFetchTopics = async () => {
 
             try {
-                const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/topics`, {
-                    headers: {
-                        "x-auth-token": token,
-                    },
-                });
+                const response = await fetchTopics();
 
                 if (response.status === 200) {
-                    // console.log(response.data);
                     setTopics(response.data);
                 } else {
                     console.log(response);
@@ -43,14 +35,9 @@ function Dashboard() {
             }
         };
 
-        const fetchSubscibedTopics = async () => {
+        const handleFetchSubscibedTopics = async () => {
             try {
-                const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/subscribed-topics`, {
-                    headers: {
-                        "x-auth-token": token,
-                        "user": username
-                    },
-                });
+                const response = await fetchSubscibedTopics();
 
                 if (response.status === 200) {
                     console.log(response.data.length);
@@ -64,8 +51,8 @@ function Dashboard() {
             }
         }
 
-        fetchTopics();
-        fetchSubscibedTopics();
+        handleFetchTopics();
+        handleFetchSubscibedTopics();
     }, []);
 
     return (

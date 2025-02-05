@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { fetchTopics } from "../../api/topic";
 
 function ShareDocument() {
 
@@ -7,21 +7,15 @@ function ShareDocument() {
     const [error, setError] = useState('');
     const [msg, setMsg] = useState('');
     const [topics, setTopics] = useState(null);
-    const token = localStorage.getItem('token');
 
     const handleSubmit = () => {
 
     };
 
     useEffect(() => {
-        const fetchTopics = async () => {
+        const handleFetchTopics = async () => {
             try {
-                const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/topics`, {
-                    headers: {
-                        "x-auth-token": token
-                    }
-                });
-
+                const res = await fetchTopics();
                 if (res.status === 200) {
                     console.log('Topics fetched successfully', res);
                     setTopics(res.data);
@@ -34,7 +28,7 @@ function ShareDocument() {
                 setMsg('');
             }
         };
-        fetchTopics();
+        handleFetchTopics();
     }, []);
 
     return (
@@ -42,6 +36,8 @@ function ShareDocument() {
             <div className="d-flex justify-content-center align-items-center">
                 <div className="card p-4 w-100 shadow-lg border-0 rounded-4" style={{ maxWidth: "420px" }}>
                     <h2 className="h4 text-center text-primary fw-bold mb-4">Share document (Pop up)</h2>
+                    {error && <p className="alert alert-danger text-center">{error}</p>}
+                    {msg && <p className="alert alert-success text-center">{msg}</p>}
 
                     <form onSubmit={handleSubmit}>
                         {/* Link */}

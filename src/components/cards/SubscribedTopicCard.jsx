@@ -8,6 +8,7 @@ import {
 import { addPost, countPosts } from "../../api/post";
 import { token } from "../../utils/localstore";
 import { username } from "../../utils/localstore";
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 const SubscribedTopicCard = ({ topic, type }) => {
 
@@ -18,6 +19,10 @@ const SubscribedTopicCard = ({ topic, type }) => {
     const [editedName, setEditedName] = useState(topic.topicData.name);
     const [content, setContent] = useState('');
     const [posts, setPosts] = useState(0);
+    const [modal, setModal] = useState(false);
+    const [postModal, setPostModal] = useState(false);
+    const togglePostModal = () => setPostModal(!postModal);
+    const toggle = () => setModal(!modal);
 
     useEffect(() => {
         console.log("Topic id is", topic.topicData._id);
@@ -50,7 +55,7 @@ const SubscribedTopicCard = ({ topic, type }) => {
         };
         handleCountPosts();
         handleCountSubscriptions();
-    }, [])
+    }, []);
 
     const curUser = username;
 
@@ -151,6 +156,7 @@ const SubscribedTopicCard = ({ topic, type }) => {
 
                 <div className="col-md-8">
                     <div className="card-body">
+
                         <h5 className="card-title">
                             {isEditing ? (
                                 <div className="row">
@@ -182,14 +188,17 @@ const SubscribedTopicCard = ({ topic, type }) => {
                                 editedName
                             )}
                         </h5>
+
                         <p className="card-text text-muted">{topic.topicData.createdBy}</p>
                         <div className="d-flex justify-content-between">
                             <p className="mb-0"><strong>Posts:</strong> {posts}</p>
                             <p className="mb-0"><strong>Subscriptions:</strong> {count}</p>
                         </div>
+
                         <div className="d-flex justify-content-between">
                             <p className="mb-0"><strong>Visibility:</strong> {topic.topicData.visibility}</p>
                         </div>
+
                         <br />
                         <div class="row g-3 align-items-center">
 
@@ -239,7 +248,7 @@ const SubscribedTopicCard = ({ topic, type }) => {
                                                     className={`bi bi-pencil-square ${isEditing ? 'text-success' : 'text-warning'}`}
                                                     style={{ fontSize: '1.3rem' }}
                                                 ></i>
-                                                <i class="bi bi-trash text-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" style={{ fontSize: '1.3rem' }}></i>
+                                                <i onClick={() => toggle()} class="bi bi-trash text-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" style={{ fontSize: '1.3rem' }}></i>
                                             </>
                                         )}
                                     </div>
@@ -248,59 +257,52 @@ const SubscribedTopicCard = ({ topic, type }) => {
 
                             <div className="d-flex col gap-2">
                                 <button onClick={() => { type === 'sub' ? handleUnsubscribeTopic() : handleSubscribeTopic() }} type="button" class="btn btn-primary">{type === 'sub' ? 'Unsubscribe' : 'Subscribe'}</button>
-                                <i class="bi bi-file-earmark-plus-fill" data-bs-toggle="modal" data-bs-target="#postModal" style={{ fontSize: '2.0rem' }}></i>
+                                <i onClick={togglePostModal} class="bi bi-file-earmark-plus-fill" data-bs-toggle="modal" data-bs-target="#postModal" style={{ fontSize: '2.0rem' }}></i>
                                 <Link to={`/posts/${topic.topicData._id}`} className="btn btn-primary">Posts</Link>
                             </div>
                         </div>
 
-                        <div className="modal fade" id="exampleModal" tabIndex="-1" aria-hidden="true">
-                            <div className="modal-dialog">
-                                <div className="modal-content">
-                                    <div className="modal-header">
-                                        <h5 className="modal-title">Confirm Delete</h5>
-                                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div className="modal-body">Are you sure you want to proceed?</div>
-                                    <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button onClick={() => handleDeleteTopic()} type="button" className="btn btn-primary" data-bs-dismiss="modal">Delete</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <Modal isOpen={modal} toggle={toggle}>
+                            <ModalHeader toggle={toggle}>Confirm Delete</ModalHeader>
+                            <ModalBody>
+                                Are you sure you want to proceed?
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="primary" onClick={() => {
+                                    handleDeleteTopic()
+                                    toggle()
+                                }}>
+                                    Delete
+                                </Button>{' '}
+                                <Button color="secondary" onClick={toggle}>
+                                    Cancel
+                                </Button>
+                            </ModalFooter>
+                        </Modal>
 
-                        <div className="modal fade" id="postModal" tabIndex="-1" aria-hidden="true">
-                            <div className="modal-dialog modal-dialog-centered">
-                                <div className="modal-content rounded-4 shadow-lg">
-                                    {/* Modal Header */}
-                                    <div className="modal-header bg-primary text-white rounded-top">
-                                        <h5 className="modal-title mx-auto fw-bold">Create a Post</h5>
-                                        <button type="button" className="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-
-                                    {/* Modal Body */}
-                                    <div className="modal-body p-8">
-                                        <input
-                                            type="text"
-                                            value={content}
-                                            onChange={(e) => setContent(e.target.value)}
-                                            className="form-control p-3 rounded-3 border-light shadow-sm bg-light"
-                                            placeholder="What's on your mind?"
-                                        />
-                                    </div>
-
-                                    {/* Modal Footer */}
-                                    <div className="modal-footer d-flex justify-content-between border-0 px-4 pb-3">
-                                        <button type="button" className="btn btn-outline-secondary px-4 py-2 rounded-pill" data-bs-dismiss="modal">
-                                            Close
-                                        </button>
-                                        <button onClick={() => handleAddPost()} type="button" className="btn btn-primary px-4 py-2 rounded-pill shadow-sm" data-bs-dismiss="modal">
-                                            Post
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <Modal isOpen={postModal} toggle={togglePostModal}>
+                            <ModalHeader toggle={togglePostModal}>Create a Post</ModalHeader>
+                            <ModalBody>
+                                <input
+                                    type="text"
+                                    value={content}
+                                    onChange={(e) => setContent(e.target.value)}
+                                    className="form-control p-3 rounded-3 border-light shadow-sm bg-light"
+                                    placeholder="What's on your mind?"
+                                />
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="primary" onClick={() => {
+                                    handleAddPost()
+                                    togglePostModal()
+                                }}>
+                                    Post
+                                </Button>{' '}
+                                <Button color="secondary" onClick={togglePostModal}>
+                                    Cancel
+                                </Button>
+                            </ModalFooter>
+                        </Modal>
 
                     </div>
                 </div>

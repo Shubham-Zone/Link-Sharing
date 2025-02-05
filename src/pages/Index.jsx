@@ -1,6 +1,5 @@
 import LoginPage from './Login';
 import RegisterPage from './Register';
-import PostCard from '../components/cards/PostCard';
 import Navbar from '../components/navbars/NavBar';
 
 function IndexPage() {

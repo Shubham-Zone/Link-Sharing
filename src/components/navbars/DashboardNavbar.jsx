@@ -1,13 +1,10 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { fetchUser } from '../../api/user';
 
 function DashboardNavbar({ status, setStatus }) {
     const navigate = useNavigate();
-    const user = localStorage.getItem('name');
-    const email = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
     const [curUser, setcurUser] = useState(null);
 
     const logout = () => {
@@ -16,14 +13,9 @@ function DashboardNavbar({ status, setStatus }) {
     }
 
     useEffect(() => {
-        const fetchUser = async () => {
+        const handleFetchUser = async () => {
             try {
-                const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/user`, {
-                    headers: {
-                        "email": email,
-                        "x-auth-token": token
-                    }
-                });
+                const res = await fetchUser();
                 if (res.status === 201) {
                     setcurUser(res.data);
                     console.log("User data fetched successfully at dashboard", res.data);
@@ -34,7 +26,7 @@ function DashboardNavbar({ status, setStatus }) {
                 console.log(e);
             }
         };
-        fetchUser();
+        handleFetchUser();
     }, []);
 
     return (

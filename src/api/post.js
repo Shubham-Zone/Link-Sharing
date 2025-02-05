@@ -25,6 +25,19 @@ export const addPost = async (id, content, createdBy, user, name) => {
     }
 };
 
+export const fetchPosts = async (id) => {
+    try {
+        const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/posts/${id}`, {
+            headers: {
+                "x-auth-token": token
+            }
+        });
+        return res;
+    } catch (e) {
+        throw e;
+    }
+};
+
 export const countPosts = async (id) => {
     try {
         const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/posts/${id}`,

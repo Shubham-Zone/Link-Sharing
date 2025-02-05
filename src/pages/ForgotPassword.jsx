@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Spinner from '../components/helpers/Spinner';
-import axios from "axios";
 import { requestPasswordReset } from "../api/auth";
 
 function ForgotPasswordPage() {

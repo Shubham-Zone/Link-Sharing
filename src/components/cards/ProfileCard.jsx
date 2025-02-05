@@ -1,9 +1,8 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
+import { fetchTopics, fetchSubscibedTopics } from "../../api/topic";
+import { fetchUser } from "../../api/user";
 
 function ProfileCard() {
-
-    const username = localStorage.getItem('user');
 
     const [topics, setTopics] = useState(0);
     const [subscribed, setSubscribed] = useState(0);
@@ -11,15 +10,9 @@ function ProfileCard() {
     const [base64String, setbase64String] = useState('');
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const fetchTopics = async () => {
+        const handleFetchTopics = async () => {
             try {
-                const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/topics`, {
-                    headers: {
-                        "x-auth-token": token,
-                    },
-                });
-
+                const response = await fetchTopics();
                 if (response.status === 200) {
                     console.log(response.data.length);
                     setTopics(response.data.length);
@@ -31,14 +24,9 @@ function ProfileCard() {
             }
         };
 
-        const fetchSubscibedTopics = async () => {
+        const handleFetchSubscibedTopics = async () => {
             try {
-                const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/subscribed-topics`, {
-                    headers: {
-                        "x-auth-token": token,
-                        "user": username
-                    },
-                });
+                const response = await fetchSubscibedTopics();
 
                 if (response.status === 200) {
                     console.log("Subscribed topics length");
@@ -52,35 +40,25 @@ function ProfileCard() {
             }
         };
 
-        const fetchUser = async () => {
+        const handleFetchUser = async () => {
             try {
-                const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/user`, {
-                    headers: {
-                        "email": username,
-                        "x-auth-token": token
-                    }
-                });
+                const res = await fetchUser();
                 if (res.status === 201) {
                     setUser(res.data);
                     if (res.data.profilePhoto && res.data.profilePhoto) {
                         setbase64String(res.data.profilePhoto);
                     }
-                    console.log('Base url is', base64String);
-                    console.log(res.data.profilePhoto);
-                    console.log("User data fetched successfully", res.data);
                 } else {
                     console.log("Something went wrong while fetching user data", res.data);
                 }
             } catch (e) {
                 console.log(e);
-            } finally {
-                console.log('Image fetched successfully', base64String.substring(20));
-            }
+            } 
         };
 
-        fetchTopics();
-        fetchSubscibedTopics();
-        fetchUser();
+        handleFetchTopics();
+        handleFetchSubscibedTopics();
+        handleFetchUser();
     }, [base64String]);
 
     return (

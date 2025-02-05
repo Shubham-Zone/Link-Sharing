@@ -1,22 +1,17 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import { token } from "../utils/localstore";
 import { useParams } from "react-router-dom";
+import { fetchPosts } from "../api/post";
 
 const Post = () => {
     const { id } = useParams();
     const [posts, setPosts] = useState(null);
 
     useEffect(() => {
-        const fetchPosts = async () => {
+        const handleFetchPosts = async () => {
             try {
-                console.log("id is", id);
-                const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/posts/${id}`, {
-                    headers: {
-                        "x-auth-token": token
-                    }
-                });
+                const res = await fetchPosts();
 
                 if (res.status === 200) {
                     setPosts(res.data);
@@ -27,7 +22,7 @@ const Post = () => {
                 console.log("Error fetching posts:", e);
             }
         };
-        fetchPosts();
+        handleFetchPosts();
     }, [id, token]);
 
     return (

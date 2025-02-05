@@ -1,5 +1,5 @@
 import axios from "axios";
-import { token } from "../utils/localstore";
+import { token, username } from "../utils/localstore";
 
 export const subscribeTopic = async (id, name, user) => {
     try {
@@ -52,6 +52,53 @@ export const countSubscriptions = async (id) => {
     }
 };
 
+export const fetchTopics = async () => {
+    try {
+        const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/topics`, {
+            headers: {
+                "x-auth-token": token,
+            },
+        });
+        return response;
+    } catch (e) {
+        throw e;
+    }
+};
+
+export const fetchSubscibedTopics = async () => {
+    try {
+        const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/subscribed-topics`, {
+            headers: {
+                "x-auth-token": token,
+                "user": username
+            },
+        });
+        return response
+    } catch (e) {
+        throw e;
+    }
+};
+
+export const createTopic = async (name, visibility) => {
+    try {
+        const response = await axios.post(`${import.meta.env?.VITE_BASE_URL}/create-topic`,
+            {
+                "name": name,
+                "createdBy": username,
+                "dateCreated": Date.now(),
+                "lastUpdated": Date.now(),
+                "visibility": visibility
+            }, {
+            headers: {
+                'x-auth-token': token
+            }
+        });
+        return response;
+    } catch (e) {
+        throw e;
+    }
+};
+
 export const deleteTopic = async (id) => {
     try {
         const res = await axios.delete(`${import.meta.env?.VITE_BASE_URL}/delete-topic`, {
@@ -85,3 +132,4 @@ export const updateTopic = async (id, editedName) => {
         throw e;
     }
 };
+
