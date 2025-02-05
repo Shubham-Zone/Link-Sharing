@@ -1,13 +1,13 @@
-import DashboardNavbar from "../components/navbars/DashboardNavbar";
-import CreateTopicPage from "../components/functions/CreateTopic";
-import PostCard from "../components/cards/PostCard";
-import SubscribedTopicCard from "../components/cards/SubscribedTopicCard";
-import ShareLink from "../components/functions/Sharelink";
-import ShareDocument from "../components/functions/Sharedocument";
-import ProfileCard from "../components/cards/ProfileCard";
+import DashboardNavbar from "../../components/navbars/DashboardNavbar";
+import CreateTopicPage from "../../components/functions/CreateTopic";
+import PostCard from "../../components/cards/PostCard";
+import SubscribedTopicCard from "../../components/cards/SubscribedTopicCard";
+import ShareLink from "../../components/functions/Sharelink";
+import ShareDocument from "../../components/functions/Sharedocument";
+import ProfileCard from "../../components/cards/ProfileCard";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { fetchTopics, fetchSubscibedTopics } from "../api/topic";
+import { fetchTopics, fetchSubscibedTopics } from "../../api/topic";
 
 function Dashboard() {
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Spinner from '../components/helpers/Spinner';
-import { requestPasswordReset } from "../api/auth";
+import Spinner from '../../components/helpers/Spinner';
+import { requestPasswordReset } from "../../api/auth";
 
 function ForgotPasswordPage() {
     const [email, setEmail] = useState('');

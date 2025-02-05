@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Spinner from '../components/helpers/Spinner';
-import { login } from "../api/auth";
+import Spinner from '../../components/helpers/Spinner';
+import { login } from "../../api/auth";
 
 const LoginPage = () => {
     const [error, setError] = useState("");

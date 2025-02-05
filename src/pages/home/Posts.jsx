@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { token } from "../utils/localstore";
+import { token } from "../../utils/localstore";
 import { useParams } from "react-router-dom";
-import { fetchPosts } from "../api/post";
+import { fetchPosts } from "../../api/post";
 
 const Post = () => {
     const { id } = useParams();

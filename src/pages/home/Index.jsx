@@ -1,6 +1,6 @@
 import LoginPage from './Login';
 import RegisterPage from './Register';
-import Navbar from '../components/navbars/NavBar';
+import Navbar from '../../components/navbars/NavBar';
 
 function IndexPage() {
     return (

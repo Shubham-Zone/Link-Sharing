@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { register } from "../api/auth";
+import { register } from "../../api/auth";
 
 const RegisterPage = () => {
     const [loading, setLoading] = useState(false);
