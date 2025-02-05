@@ -8,10 +8,13 @@ import ProfileCard from "../../components/cards/ProfileCard";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { fetchTopics, fetchSubscibedTopics } from "../../api/topic";
+import { fetchPublicPosts } from "../../api/post";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
 
     const [topics, setTopics] = useState([]);
+    const [posts, setPosts] = useState(null);
     const [subscribedTopics, setsubscribedTopics] = useState([]);
     const [status, setStatus] = useState({
         shareLink: false,
@@ -49,76 +52,107 @@ function Dashboard() {
             } catch (e) {
                 console.log(e);
             }
-        }
+        };
 
+        const handleFetchPosts = async () => {
+            try {
+                const res = await fetchPublicPosts();
+
+                if (res.status === 200) {
+                    setPosts(res.data);
+                } else {
+                    console.log("Error fetching posts:", res.data.msg);
+                }
+            } catch (e) {
+                console.log("Error fetching posts:", e);
+            }
+        };
+
+        handleFetchPosts();
         handleFetchTopics();
         handleFetchSubscibedTopics();
     }, []);
 
     return (
         <>
-            <div className="container-fluid bg-white min-vh-100">
+            <div className="container-lg bg-light min-vh-100">
                 <DashboardNavbar status={status} setStatus={setStatus} />
-
-                <div className="container py-2 mt-4">
-                    <div className="row d-flex flex-row align-items-start justify-items-start">
-
-                        {/* Left Section (Recent-shares + top posts) */}
-                        {topics.length > 0 && (<div className="col-lg-8 gap-10">
-
-                            <ProfileCard />
-
-                            {/*Subscribed Topics*/}
-                            <div className="d-flex border border-3 border-secondary flex-column gap-3 mx-auto p-10 mb-3">
-                                <label className='fs-3' htmlFor="">Subscriptions</label>
-                                {
-                                    subscribedTopics.map((topic) =>
-
-                                        <SubscribedTopicCard
-                                            topic={topic}
-                                            type={'sub'}
-                                        />
-                                    )
-                                }
+    
+                <div className="container py-4">
+                    <div className="row g-4">
+    
+                        {/* Left Section */}
+                        {topics.length > 0 && (
+                            <div className="col-12 col-lg-8">
+                                <ProfileCard />
+    
+                                {/* Subscribed Topics */}
+                                <div className="border border-2 rounded-3 shadow-sm bg-white p-3 mb-4">
+                                    <h4 className="fw-bold text-primary">Subscriptions</h4>
+                                    {subscribedTopics.map((topic) => (
+                                        <SubscribedTopicCard key={topic._id} topic={topic} topics={subscribedTopics} setTopics={setsubscribedTopics} type="sub" />
+                                    ))}
+                                </div>
+    
+                                {/* Trending Topics */}
+                                <div className="border border-2 rounded-3 shadow-sm bg-white p-3 mb-4">
+                                    <h4 className="fw-bold text-danger">Trending Topics</h4>
+                                    {topics.map((topic) => (
+                                        <PostCard key={topic._id}
+                                         topic={topic}
+                                         topics={topics} 
+                                         setTopics={setTopics}
+                                         type="pub" />
+                                    ))}
+                                </div>
                             </div>
-
-                            {/*Trending Topics*/}
-                            <div className="d-flex border border-3 border-secondary flex-column gap-3 mx-auto p-10 mb-3">
-                                <label className='fs-3' htmlFor="">Trending topics</label>
-                                {
-                                    topics.map((topic) =>
-                                        <PostCard key={topic._id} topic={topic} type={'pub'} />
-                                    )
-                                }
-                            </div>
-
-                            <br /> <br />
-                            <CreateTopicPage />
-                        </div>
                         )}
-
-                        {/* Right Section (Login + Register) */}
-                        <div className="col-lg-4">
-                            {topics.length > 0 && (<div className="d-flex border border-3 border-secondary flex-column gap-3 mx-auto p-10 mb-3">
-                                <label className='fs-3' htmlFor="">Inbox</label>
-                                {/* <Post img={''} title={'Post 1'} desc={'This is a demo post.'} />
-                                <Post img={''} title={'Post 2'} desc={'This is a demo post.'} />
-                                <Post img={''} title={'Post 3'} desc={'This is a demo post.'} />
-                                <Post img={''} title={'Post 4'} desc={'This is a demo post.'} /> */}
-                            </div>)}
+    
+                        {/* Right Section */}
+                        <div className="col-12 col-lg-4">
+                            {topics.length > 0 && (
+                                <div className="border border-2 rounded-3 shadow-sm bg-white p-3 mb-4">
+                                    <h4 className="fw-bold text-success">Inbox</h4>
+                                    {posts &&
+                                        posts.map((post) => (
+                                            <div key={post._id} className="card w-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                                                <div className="card-body">
+                                                    <h5 className="fw-bold text-dark">{post.createrName} (@{post.createrUsername})</h5>
+                                                    <h6 className="text-muted">{post.topicName}</h6>
+                                                    <p className="text-wrap">{post.content}</p>
+    
+                                                    <div className="d-flex flex-wrap gap-2 mt-3">
+                                                        <Link to="#" className="btn btn-outline-primary btn-sm">
+                                                            <i className="bi bi-download"></i> Download
+                                                        </Link>
+                                                        <Link to="#" className="btn btn-outline-secondary btn-sm">
+                                                            <i className="bi bi-eye"></i> View Full Site
+                                                        </Link>
+                                                        <Link to="#" className="btn btn-outline-success btn-sm">
+                                                            <i className="bi bi-check-circle"></i> Mark as Read
+                                                        </Link>
+                                                        <Link to="#" className="btn btn-outline-info btn-sm">
+                                                            <i className="bi bi-card-text"></i> View Post
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                </div>
+                            )}
                             <div className="d-flex flex-column gap-3">
-                                {status.shareLink && (<ShareLink />)}
-                                {status.shareDocs && (<ShareDocument />)}
-                                {status.createTopic && (<CreateTopicPage />)}
+                                {status.shareLink && <ShareLink />}
+                                {status.shareDocs && <ShareDocument />}
+                                {status.createTopic && <CreateTopicPage />}
                             </div>
                         </div>
-
+    
                     </div>
                 </div>
             </div>
-
         </>
     );
+    
 }
 
 export default Dashboard;

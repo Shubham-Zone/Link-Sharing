@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Spinner from '../helpers/Spinner';
 import { createTopic } from "../../api/topic";
+import Swal from "sweetalert2";
 
 function CreateTopicPage() {
     const [visibility, setVisibility] = useState("Public");
@@ -26,6 +27,11 @@ function CreateTopicPage() {
             setLoading(true);
             const response = await createTopic(name, visibility);
             if(response.status === 200) {
+                Swal.fire({
+                    title: "Good job!",
+                    text: "Topic Created successfully!",
+                    icon: "success"
+                  });
                 setMsg(response.data.msg || 'Topic created successfully');
                 setError('');
                 window.location.reload();

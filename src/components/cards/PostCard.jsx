@@ -8,8 +8,9 @@ import {
 import { addPost, countPosts } from "../../api/post";
 import { token, username } from "../../utils/localstore";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import {successAlert, errorAlert} from '../helpers/Alert';
 
-const PostCard = ({ topic, type }) => {
+const PostCard = ({ topic, topics, setTopics, type }) => {
 
     const [count, setCount] = useState(0);
     const [seriousness, setSeriousness] = useState('Serious');
@@ -64,15 +65,14 @@ const PostCard = ({ topic, type }) => {
         }
         try {
             const res = await subscribeTopic(topic._id, topic.name, username);
-            console.log(username);
             if (res.status === 200) {
-                alert(`Subscribed to topic ${topic.name} successfully`);
-                console.log("Subscribed", res);
+                successAlert(`Subscribed to topic ${topic.name} successfully`);
                 window.location.reload();
             } else {
-                console.log("Something went wrong", res);
+                errorAlert(`Something went wrong ${err}`);
             }
         } catch (e) {
+            errorAlert(e.response.data.msg);
             console.log(e);
         }
     };
@@ -83,13 +83,14 @@ const PostCard = ({ topic, type }) => {
             const res = await unsubscribeTopic(topic._id);
 
             if (res.status === 200) {
-                alert(`${topic.name} topic unsubscribed successfully`);
-                window.location.reload();
+                successAlert(`${topic.name} topic unsubscribed successfully`);
+                const filterTopics = topics.filter((item) => item._id !== topic._id);
+                setTopics(filterTopics);
             } else {
-                console.log('Error while unsubscribe', res.data);
+                errorAlert(`Error while unsubscribe: ${res.data}`);
             }
         } catch (e) {
-            console.log('Error while deleting the topic', e);
+            errorAlert(`Error while deleting the topic: ${e.response.data.msg}`);
         }
     };
 
@@ -97,13 +98,12 @@ const PostCard = ({ topic, type }) => {
         try {
             const res = await deleteTopic(topic._id);
             if (res.status === 200) {
-                alert('Topic deleted successfully');
-                window.location.reload();
+                successAlert("Topic deleted successfully!");
             } else {
-                console.log('Error while deleting topic ', res.data);
+                errorAlert(`Error while deleting topic: ${res.data.msg}`);
             }
         } catch (e) {
-            console.log(e);
+            errorAlert(`Error while deleting topic: ${e.response.data.msg}`);
         }
     };
 
@@ -111,30 +111,26 @@ const PostCard = ({ topic, type }) => {
         try {
             const res = await updateTopic(topic._id, editedName);
             if (res.status === 200) {
-                alert('Topic updated successfully');
-                console.log('Updated successfully', res.data);
+                successAlert("Topic updated successfully!");
             } else {
-                console.log('Error while updating topic', res.data);
+                errorAlert(`Error while updating topic: ${res.data.msg}`);
             }
         } catch (e) {
-            console.log('Error while updating topic', e);
+            errorAlert(`Error while updating topic: ${e.response.data.msg}`);
         }
     };
 
     const handleAddPost = async () => {
-        console.log("handleAddPost function called", topic._id);
         try {
             const res = await addPost(topic._id, content, topic.createdBy, username, topic.name);
 
             if (res.status === 200) {
-                alert('Post created successfully');
-                console.log(res.data);
-                console.log(res.data.msg);
+                successAlert("Post created successfully!");
             } else {
-                console.log("Error while creating post", res.data);
+                errorAlert(`Error while creating post: ${res.data.msg}`);
             }
         } catch (e) {
-            console.log("Error while posting", e);
+            errorAlert(`Error while creating post: ${e.response.data.msg}`);
         }
     };
 

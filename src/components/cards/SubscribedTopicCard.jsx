@@ -9,8 +9,9 @@ import { addPost, countPosts } from "../../api/post";
 import { token } from "../../utils/localstore";
 import { username } from "../../utils/localstore";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { successAlert, errorAlert } from "../helpers/Alert";
 
-const SubscribedTopicCard = ({ topic, type }) => {
+const SubscribedTopicCard = ({ topic, topics, setTopics, type }) => {
 
     const [count, setCount] = useState(0);
     const [seriousness, setSeriousness] = useState('Serious');
@@ -25,7 +26,6 @@ const SubscribedTopicCard = ({ topic, type }) => {
     const toggle = () => setModal(!modal);
 
     useEffect(() => {
-        console.log("Topic id is", topic.topicData._id);
         const handleCountSubscriptions = async () => {
             try {
                 const res = await countSubscriptions(topic.topicData._id);
@@ -57,8 +57,6 @@ const SubscribedTopicCard = ({ topic, type }) => {
         handleCountSubscriptions();
     }, []);
 
-    const curUser = username;
-
     const handleSubscribeTopic = async () => {
         if (!token) {
             alert("Token not found");
@@ -66,32 +64,30 @@ const SubscribedTopicCard = ({ topic, type }) => {
         }
         try {
             const res = await subscribeTopic(topic.topicData._id, topic.topicData.name, topic.user);
-            console.log(user);
             if (res.status === 200) {
-                alert(`Subscribed to topic ${topic.topicData.name} successfully`);
-                console.log("Subscribed", res);
-                window.location.reload();
+                successAlert(`Subscribed to topic ${topic.topicData.name} successfully`);
             } else {
-                console.log("Something went wrong", res);
+                errorAlert(`Something went wrong: ${res.data.msg}`);
             }
         } catch (e) {
-            console.log(e);
+            errorAlert(e.response.data.msg);
         }
     };
 
     const handleUnsubscribeTopic = async () => {
         try {
-            console.log("Token is", token);
             const res = await unsubscribeTopic(topic.topicData._id);
 
             if (res.status === 200) {
-                alert(`${name} topic unsubscribed successfully`);
-                window.location.reload();
+                successAlert(`${topic.name} topic unsubscribed successfully`);
+                console.log("Topic to unsub is", topic.topicData._id);
+                const filterTopics = topics.filter((item) => item.topicData._id !== topic.topicData._id);
+                setTopics(filterTopics);
             } else {
-                console.log('Error while unsubscribe', res.data);
+                errorAlert(`Error while unsubscribe: ${res.data.msg}`);
             }
         } catch (e) {
-            console.log('Error while deleting the topic', e);
+            errorAlert(`Error while deleting the topic: ${e.response.data.msg}`);
         }
     };
 
@@ -99,13 +95,12 @@ const SubscribedTopicCard = ({ topic, type }) => {
         try {
             const res = await deleteTopic(topic.topicData._id);
             if (res.status === 200) {
-                alert('Topic deleted successfully');
-                window.location.reload();
+                successAlert('Topic deleted successfully');
             } else {
-                console.log('Error while deleting topic ', res.data);
+                errorAlert(`Error while deleting topic: ${res.data.msg}`);
             }
         } catch (e) {
-            console.log(e);
+            errorAlert(e.response.data.msg);
         }
     };
 
@@ -113,30 +108,27 @@ const SubscribedTopicCard = ({ topic, type }) => {
         try {
             const res = await updateTopic(topic.topicData._id, editedName);
             if (res.status === 200) {
-                alert('Topic updated successfully');
-                console.log('Updated successfully', res.data);
+                successAlert('Topic updated successfully');
             } else {
-                console.log('Error while updating topic', res.data);
+                errorAlert(`Error while updating topic: ${res.data.msg}`);
             }
         } catch (e) {
-            console.log('Error while updating topic', e);
+            errorAlert(`Error while updating topic: ${e.response.data.msg}`);
         }
     };
 
     const handleAddPost = async () => {
-        console.log("Adding post to topic", topic.topicData._id);
         try {
-            const res = await addPost(topic.topicData._id, content, topic.topicData.createdBy, topic.user, topic.topicData.name);
+            const res = await addPost(topic.topicData._id, content,
+            topic.topicData.createdBy, topic.user, topic.topicData.name);
 
             if (res.status === 200) {
-                alert('Post created successfully');
-                console.log(res.data);
-                console.log(res.data.msg);
+                successAlert('Post created successfully');
             } else {
-                console.log("Error while creating post", res.data);
+                errorAlert(`Error while creating post: ${res.data.msg}`);
             }
         } catch (e) {
-            console.log("Error while posting", e);
+            errorAlert(`Error while posting: ${e.response.data.msg}`);
         }
     };
 

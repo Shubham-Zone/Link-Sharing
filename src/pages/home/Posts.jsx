@@ -11,7 +11,7 @@ const Post = () => {
     useEffect(() => {
         const handleFetchPosts = async () => {
             try {
-                const res = await fetchPosts();
+                const res = await fetchPosts(id);
 
                 if (res.status === 200) {
                     setPosts(res.data);

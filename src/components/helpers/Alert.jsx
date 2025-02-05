@@ -1,10 +1,18 @@
-function Alert(title, desc) {
-    return (
-        <div class="alert alert-success" role="alert">
-            <h4 class="alert-heading">{title}</h4>
-            <p>{desc}</p>
-        </div>
-    );
+import Swal from "sweetalert2";
+
+export const successAlert = (text) => {
+    return Swal.fire({
+        title: "Good job!",
+        text: text,
+        icon: "success"
+    });
 }
 
-export default Alert;
+export const errorAlert = (text) => {
+    return Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: text,
+        footer: '<a href="#">Why do I have this issue?</a>'
+    });
+}

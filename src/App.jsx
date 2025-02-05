@@ -1,11 +1,11 @@
-import RegisterPage from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import IndexPage from './pages/Index';
+import RegisterPage from './pages/auth/Register';
+import Dashboard from './pages/home/Dashboard';
+import IndexPage from './pages/home/Index';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import ForgotPasswordPage from './pages/ForgotPassword';
-import ResetPasswordPage from './pages/ResetPassword';
+import ForgotPasswordPage from './pages/auth//ForgotPassword';
+import ResetPasswordPage from './pages/auth/ResetPassword';
 import CreateTopicPage from './components/functions/CreateTopic';
-import Post from './pages/Posts';
+import Post from './pages/home/Posts';
 
 function App() {
   return (
