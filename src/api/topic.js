@@ -1,5 +1,5 @@
 import axios from "axios";
-import { token, username } from "../utils/localstore";
+import { token, username, uuid } from "../utils/localstore";
 
 export const subscribeTopic = async (id, name, user) => {
     try {
@@ -7,8 +7,8 @@ export const subscribeTopic = async (id, name, user) => {
             {
                 "topic_id": id,
                 "topic": name,
-                "user": user,
-                "seriousness": "serious",
+                "user": uuid,
+                "seriousness": "casual",
                 "dateCreated": "2025-01-12"
             },
             {
@@ -70,7 +70,7 @@ export const fetchSubscibedTopics = async () => {
         const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/subscribed-topics`, {
             headers: {
                 "x-auth-token": token,
-                "user": username
+                "user": uuid
             },
         });
         return response
@@ -84,7 +84,7 @@ export const createTopic = async (name, visibility) => {
         const response = await axios.post(`${import.meta.env?.VITE_BASE_URL}/create-topic`,
             {
                 "name": name,
-                "createdBy": username,
+                "createdBy": uuid,
                 "dateCreated": Date.now(),
                 "lastUpdated": Date.now(),
                 "visibility": visibility

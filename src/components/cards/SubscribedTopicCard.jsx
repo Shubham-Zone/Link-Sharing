@@ -120,7 +120,7 @@ const SubscribedTopicCard = ({ topic, topics, setTopics, type }) => {
     const handleAddPost = async () => {
         try {
             const res = await addPost(topic.topicData._id, content,
-            topic.topicData.createdBy, topic.user, topic.topicData.name);
+            topic.topicData.createdBy, topic.topicData.name);
 
             if (res.status === 200) {
                 successAlert('Post created successfully');

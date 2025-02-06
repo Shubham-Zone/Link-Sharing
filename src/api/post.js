@@ -1,7 +1,7 @@
 import axios from "axios";
-import { token } from "../utils/localstore";
+import { token, uuid } from "../utils/localstore";
 
-export const addPost = async (id, content, createdBy, user, name) => {
+export const addPost = async (id, content, createdBy, name) => {
     console.log("Topic is for adding post is", id);
 
     try {
@@ -10,7 +10,7 @@ export const addPost = async (id, content, createdBy, user, name) => {
                 "topicId": id,
                 "content": content,
                 "createrName": createdBy,
-                "createrUsername": user,
+                "createrUsername": uuid,
                 "topicName": name
             },
             {

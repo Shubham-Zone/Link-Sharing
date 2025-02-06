@@ -8,7 +8,7 @@ import {
 import { addPost, countPosts } from "../../api/post";
 import { token, username } from "../../utils/localstore";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import {successAlert, errorAlert} from '../helpers/Alert';
+import { successAlert, errorAlert } from '../helpers/Alert';
 
 const PostCard = ({ topic, topics, setTopics, type }) => {
 
@@ -64,7 +64,7 @@ const PostCard = ({ topic, topics, setTopics, type }) => {
             return;
         }
         try {
-            const res = await subscribeTopic(topic._id, topic.name, username);
+            const res = await subscribeTopic(topic._id, topic.name);
             if (res.status === 200) {
                 successAlert(`Subscribed to topic ${topic.name} successfully`);
                 window.location.reload();
@@ -122,7 +122,7 @@ const PostCard = ({ topic, topics, setTopics, type }) => {
 
     const handleAddPost = async () => {
         try {
-            const res = await addPost(topic._id, content, topic.createdBy, username, topic.name);
+            const res = await addPost(topic._id, content, topic.createdBy, topic.name);
 
             if (res.status === 200) {
                 successAlert("Post created successfully!");

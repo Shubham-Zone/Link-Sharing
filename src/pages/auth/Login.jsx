@@ -33,6 +33,8 @@ const LoginPage = () => {
             setMsg(res.data);
             localStorage.setItem('user', email);
             localStorage.setItem('token', res.data.token);
+            localStorage.setItem('uuid', res.data.uuid);
+            console.log("user login and uuid is", res.data.uuid);
             navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.msg || "An error occurred!");

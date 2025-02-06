@@ -19,7 +19,7 @@ const Post = () => {
                     console.log("Error fetching posts:", res.data.msg);
                 }
             } catch (e) {
-                console.log("Error fetching posts:", e);
+                console.log("Error fetching posts:", e.response.data.msg);
             }
         };
         handleFetchPosts();

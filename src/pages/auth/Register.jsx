@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { register } from "../../api/auth";
+import { v4 as uuid } from "uuid";
+import {errorAlert, successAlert} from '../../components/helpers/Alert';
 
 const RegisterPage = () => {
     const [loading, setLoading] = useState(false);
@@ -11,6 +13,7 @@ const RegisterPage = () => {
         password: "",
         confirmPassword: "",
         profilePhoto: null,
+        uuid: uuid()
     });
 
     const handleChange = (e) => {
@@ -38,11 +41,12 @@ const RegisterPage = () => {
         try {
             setLoading(true);
             const res = await register(data);
-            alert(res.data.msg);
+            successAlert(res.data.msg);
+            console.log('uuid is', formData.uuid);
             localStorage.setItem('username', formData.userName);
             localStorage.setItem('name', formData.firstName + ' ' + formData.lastName);
         } catch (err) {
-            alert(err.response?.data?.msg || "An error occurred!");
+            errorAlert(err.response?.data?.msg || "An error occurred!");
         } finally {
             setLoading(false);
         }

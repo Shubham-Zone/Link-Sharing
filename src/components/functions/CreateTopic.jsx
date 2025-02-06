@@ -12,12 +12,6 @@ function CreateTopicPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
-        if (!token) {
-            setError("Token not found");
-            setMsg('');
-            return;
-        }
         if (!name || !visibility) {
             setMsg("Please enter all the fields");
             setError('');
