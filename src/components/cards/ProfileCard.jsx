@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { fetchTopics, fetchSubscibedTopics } from "../../api/topic";
+import { fetchUserTopics, fetchSubscibedTopics } from "../../api/topic";
 import { fetchUser } from "../../api/user";
+import { uuid } from "../../utils/localstore";
 
 function ProfileCard() {
 
@@ -12,10 +13,11 @@ function ProfileCard() {
     useEffect(() => {
         const handleFetchTopics = async () => {
             try {
-                const response = await fetchTopics();
+                const response = await fetchUserTopics(uuid);
                 if (response.status === 200) {
-                    console.log(response.data.length);
-                    setTopics(response.data.length);
+                    const topicsArray = Array.isArray(response.data) ? response.data : [response.data];
+
+                    setTopics(topicsArray.length);
                 } else {
                     console.log(response);
                 }
@@ -62,7 +64,7 @@ function ProfileCard() {
     }, [base64String]);
 
     return (
-        <div className="card mb-3 mx-8 p-10" style={{ maxWidth: "540px", overflow: "hidden" }}>
+        <div className="card mb-3 mx-8 p-10" style={{ maxHeight: "300px", overflow: "hidden" }}>
             <div className="row no-gutters">
                 <div className="col-md-4">
                     {base64String ? (

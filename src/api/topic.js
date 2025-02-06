@@ -1,7 +1,7 @@
 import axios from "axios";
-import { token, username, uuid } from "../utils/localstore";
+import { token, uuid } from "../utils/localstore";
 
-export const subscribeTopic = async (id, name, user) => {
+export const subscribeTopic = async (id, name) => {
     try {
         const res = await axios.post(`${import.meta.env?.VITE_BASE_URL}/subscribe`,
             {
@@ -52,6 +52,20 @@ export const countSubscriptions = async (id) => {
     }
 };
 
+export const fetchUserTopics = async (id) => {
+    console.log(`Fetching topics of user with uuid`, id);
+    try {
+        const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/topics/${id}`, {
+            headers: {
+                "x-auth-token": token,
+            },
+        });
+        return response;
+    } catch(e) {
+        throw e;
+    }
+};
+
 export const fetchTopics = async () => {
     try {
         const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/topics`, {
@@ -65,15 +79,51 @@ export const fetchTopics = async () => {
     }
 };
 
-export const fetchSubscibedTopics = async () => {
+export const fetchTopic = async (id) => {
     try {
-        const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/subscribed-topics`, {
+        const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/topic/${id}`, {
             headers: {
                 "x-auth-token": token,
-                "user": uuid
             },
         });
-        return response
+        return response;
+    } catch(e) {
+        throw e;
+    }
+};
+
+export const fetchTopicUsers = async (id) => {
+    try {
+        const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/users/${id}`, {
+            headers: {
+                "x-auth-token": token,
+            },
+        });
+        return response;
+    } catch(e) {
+        throw e;
+    }
+};
+
+export const fetchSubscibedTopics = async (userId) => {
+    try {
+        if(userId) {
+            const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/subscribed-topics`, {
+                headers: {
+                    "x-auth-token": token,
+                    "user": userId
+                },
+            });
+            return response;
+        } else {
+            const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/subscribed-topics`, {
+                headers: {
+                    "x-auth-token": token,
+                    "user": uuid
+                },
+            });
+            return response;
+        }
     } catch (e) {
         throw e;
     }

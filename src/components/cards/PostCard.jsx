@@ -6,11 +6,12 @@ import {
     deleteTopic, updateTopic, countSubscriptions
 } from "../../api/topic";
 import { addPost, countPosts } from "../../api/post";
-import { token, username } from "../../utils/localstore";
+import { token, username, uuid } from "../../utils/localstore";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { successAlert, errorAlert } from '../helpers/Alert';
+import { useNavigate } from "react-router-dom";
 
-const PostCard = ({ topic, topics, setTopics, type }) => {
+const TopicUserCard = ({ topic, topics, setTopics, type }) => {
 
     const [count, setCount] = useState(0);
     const [seriousness, setSeriousness] = useState('Serious');
@@ -23,6 +24,7 @@ const PostCard = ({ topic, topics, setTopics, type }) => {
     const [postModal, setPostModal] = useState(false);
     const togglePostModal = () => setPostModal(!postModal);
     const toggle = () => setModal(!modal);
+    const navigate = useNavigate();
 
     useEffect(() => {
         console.log("Topic is", topic);
@@ -122,7 +124,7 @@ const PostCard = ({ topic, topics, setTopics, type }) => {
 
     const handleAddPost = async () => {
         try {
-            const res = await addPost(topic._id, content, topic.createdBy, topic.name);
+            const res = await addPost(topic._id, content, topic.name);
 
             if (res.status === 200) {
                 successAlert("Post created successfully!");
@@ -150,7 +152,7 @@ const PostCard = ({ topic, topics, setTopics, type }) => {
 
                 <div className="col-md-8">
                     <div className="card-body">
-                        <h5 className="card-title">
+                        <h5 onClick={() => navigate(`/topic/${topic._id}`)} className="card-title" style={{ cursor: "pointer" }}>
                             {isEditing ? (
                                 <div className="row">
                                     <input
@@ -231,7 +233,7 @@ const PostCard = ({ topic, topics, setTopics, type }) => {
                                 <div class="d-flex align-items-center gap-3">
                                     <i class="bi bi-envelope text-primary" style={{ fontSize: '1.5rem' }}></i>
                                     <div class="d-flex gap-2">
-                                        {username === topic.createdBy && (
+                                        {uuid === topic.createdBy && (
                                             <>
                                                 <i
                                                     onClick={() => setIsEditing(!isEditing)}
@@ -294,8 +296,6 @@ const PostCard = ({ topic, topics, setTopics, type }) => {
                             </ModalFooter>
                         </Modal>
 
-                        <br />
-
                     </div>
                 </div>
             </div>
@@ -303,4 +303,4 @@ const PostCard = ({ topic, topics, setTopics, type }) => {
     );
 };
 
-export default PostCard;
+export default TopicUserCard;

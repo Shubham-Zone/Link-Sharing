@@ -6,10 +6,10 @@ import {
     updateTopic, countSubscriptions
 } from "../../api/topic";
 import { addPost, countPosts } from "../../api/post";
-import { token } from "../../utils/localstore";
-import { username } from "../../utils/localstore";
+import { token, uuid } from "../../utils/localstore";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { successAlert, errorAlert } from "../helpers/Alert";
+import { useNavigate } from "react-router-dom";
 
 const SubscribedTopicCard = ({ topic, topics, setTopics, type }) => {
 
@@ -56,6 +56,7 @@ const SubscribedTopicCard = ({ topic, topics, setTopics, type }) => {
         handleCountPosts();
         handleCountSubscriptions();
     }, []);
+    const navigate = useNavigate();
 
     const handleSubscribeTopic = async () => {
         if (!token) {
@@ -119,8 +120,7 @@ const SubscribedTopicCard = ({ topic, topics, setTopics, type }) => {
 
     const handleAddPost = async () => {
         try {
-            const res = await addPost(topic.topicData._id, content,
-            topic.topicData.createdBy, topic.topicData.name);
+            const res = await addPost(topic.topicData._id, content, topic.topicData.name);
 
             if (res.status === 200) {
                 successAlert('Post created successfully');
@@ -149,7 +149,7 @@ const SubscribedTopicCard = ({ topic, topics, setTopics, type }) => {
                 <div className="col-md-8">
                     <div className="card-body">
 
-                        <h5 className="card-title">
+                        <h5 onClick={() => navigate(`/topic/${topic.topic_id}`)} className="card-title" style={{ cursor: "pointer" }}>
                             {isEditing ? (
                                 <div className="row">
                                     <input
@@ -233,7 +233,7 @@ const SubscribedTopicCard = ({ topic, topics, setTopics, type }) => {
                                 <div class="d-flex align-items-center gap-3">
                                     <i class="bi bi-envelope text-primary" style={{ fontSize: '1.5rem' }}></i>
                                     <div class="d-flex gap-2">
-                                        {username === topic.topicData.createdBy && (
+                                        {uuid === topic.topicData.createdBy && (
                                             <>
                                                 <i
                                                     onClick={() => setIsEditing(!isEditing)}

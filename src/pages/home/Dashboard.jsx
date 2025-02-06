@@ -8,8 +8,9 @@ import ProfileCard from "../../components/cards/ProfileCard";
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { fetchTopics, fetchSubscibedTopics } from "../../api/topic";
-import { fetchPublicPosts } from "../../api/post";
+import { ReadPost, fetchUnreadPosts } from "../../api/post";
 import { Link } from "react-router-dom";
+import { errorAlert, successAlert } from "../../components/helpers/Alert";
 
 function Dashboard() {
 
@@ -56,7 +57,7 @@ function Dashboard() {
 
         const handleFetchPosts = async () => {
             try {
-                const res = await fetchPublicPosts();
+                const res = await fetchUnreadPosts();
 
                 if (res.status === 200) {
                     setPosts(res.data);
@@ -72,6 +73,21 @@ function Dashboard() {
         handleFetchTopics();
         handleFetchSubscibedTopics();
     }, []);
+
+    const handleReadPost = async (postId) => {
+        try {
+            const res = await ReadPost(postId);
+            const filteredPosts = posts.filter((post) => post._id !== postId);
+            setPosts(filteredPosts);
+            if(res.status === 200) {
+                successAlert('Post marked as read.');
+            } else {
+                errorAlert(res.data.msg);
+            }
+        } catch(e) {
+            errorAlert(e.response.data.msg);
+        }
+    };
 
     return (
         <>
@@ -115,7 +131,7 @@ function Dashboard() {
                                     <h4 className="fw-bold text-success">Inbox</h4>
                                     {posts &&
                                         posts.map((post) => (
-                                            <div key={post._id} className="card w-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                                            <div key={post._id} className="mb-2 card w-100 border-0 shadow-sm rounded-3 overflow-hidden">
                                                 <div className="card-body">
                                                     <h5 className="fw-bold text-dark">{post.createrName} (@{post.createrUsername})</h5>
                                                     <h6 className="text-muted">{post.topicName}</h6>
@@ -128,7 +144,7 @@ function Dashboard() {
                                                         <Link to="#" className="btn btn-outline-secondary btn-sm">
                                                             <i className="bi bi-eye"></i> View Full Site
                                                         </Link>
-                                                        <Link to="#" className="btn btn-outline-success btn-sm">
+                                                        <Link onClick={() => handleReadPost(post._id)} to="#" className="btn btn-outline-success btn-sm">
                                                             <i className="bi bi-check-circle"></i> Mark as Read
                                                         </Link>
                                                         <Link to="#" className="btn btn-outline-info btn-sm">

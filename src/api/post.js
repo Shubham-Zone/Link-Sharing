@@ -1,7 +1,7 @@
 import axios from "axios";
-import { token, uuid } from "../utils/localstore";
+import { token, uuid, userUniqueName } from "../utils/localstore";
 
-export const addPost = async (id, content, createdBy, name) => {
+export const addPost = async (id, content, name) => {
     console.log("Topic is for adding post is", id);
 
     try {
@@ -9,8 +9,8 @@ export const addPost = async (id, content, createdBy, name) => {
             {
                 "topicId": id,
                 "content": content,
-                "createrName": createdBy,
-                "createrUsername": uuid,
+                "createrName": uuid,
+                "createrUsername": userUniqueName,
                 "topicName": name
             },
             {
@@ -32,6 +32,37 @@ export const fetchPosts = async (id) => {
                 "x-auth-token": token
             }
         });
+        return res;
+    } catch (e) {
+        throw e;
+    }
+};
+
+export const fetchUnreadPosts = async (id) => {
+    try {
+        const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/unread-posts/${uuid}`, {
+            headers: {
+                "x-auth-token": token
+            }
+        });
+        return res;
+    } catch (e) {
+        throw e;
+    }
+};
+
+export const ReadPost = async (postId) => {
+    try {
+        const res = await axios.post(`${import.meta.env?.VITE_BASE_URL}/mark-read`,
+            {
+                "userId": uuid,
+                "postId": postId
+            },
+            {
+                headers: {
+                    "x-auth-token": token
+                }
+            });
         return res;
     } catch (e) {
         throw e;
