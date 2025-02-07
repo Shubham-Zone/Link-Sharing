@@ -61,7 +61,7 @@ export const fetchUserTopics = async (id) => {
             },
         });
         return response;
-    } catch(e) {
+    } catch (e) {
         throw e;
     }
 };
@@ -70,7 +70,7 @@ export const fetchTopics = async () => {
     try {
         const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/topics`, {
             headers: {
-                "x-auth-token": token,
+                "x-auth-token": token ? token : import.meta.env.VITE_PUBLIC_TOKEN,
             },
         });
         return response;
@@ -87,7 +87,7 @@ export const fetchTopic = async (id) => {
             },
         });
         return response;
-    } catch(e) {
+    } catch (e) {
         throw e;
     }
 };
@@ -100,14 +100,14 @@ export const fetchTopicUsers = async (id) => {
             },
         });
         return response;
-    } catch(e) {
+    } catch (e) {
         throw e;
     }
 };
 
 export const fetchSubscibedTopics = async (userId) => {
     try {
-        if(userId) {
+        if (userId) {
             const response = await axios.get(`${import.meta.env?.VITE_BASE_URL}/subscribed-topics`, {
                 headers: {
                     "x-auth-token": token,

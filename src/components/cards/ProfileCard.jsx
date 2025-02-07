@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { fetchUserTopics, fetchSubscibedTopics } from "../../api/topic";
 import { fetchUser } from "../../api/user";
 import { uuid } from "../../utils/localstore";
+import { useSelector, useDispatch } from "react-redux";
+import {fetchUserDetails} from '../../redux/slice/user';
 
 function ProfileCard() {
 
@@ -9,6 +11,8 @@ function ProfileCard() {
     const [subscribed, setSubscribed] = useState(0);
     const [user, setUser] = useState(null);
     const [base64String, setbase64String] = useState('');
+    const state = useSelector((state) => state);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const handleFetchTopics = async () => {
@@ -50,6 +54,12 @@ function ProfileCard() {
                     if (res.data.profilePhoto && res.data.profilePhoto) {
                         setbase64String(res.data.profilePhoto);
                     }
+                // console.log("redux data is", state.user);
+                // if(state.user.data) {
+                //     setUser(state.user.data);
+                //     if(state.user.data.profilePhoto) {
+                //         setbase64String(state.user.data.profilePhoto);
+                //     }
                 } else {
                     console.log("Something went wrong while fetching user data", res.data);
                 }

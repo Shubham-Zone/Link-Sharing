@@ -7,6 +7,7 @@ import ResetPasswordPage from './pages/auth/ResetPassword';
 import CreateTopicPage from './components/functions/CreateTopic';
 import Post from './pages/home/Posts';
 import TopicDashboard from './pages/home/TopicDashboard';
+import Profile from './pages/home/Profile';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path='/createTopic' element={<CreateTopicPage />} />
           <Route path="/posts/:id" element={<Post />} />
           <Route path="/topic/:id" element={<TopicDashboard />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </BrowserRouter>
     </>

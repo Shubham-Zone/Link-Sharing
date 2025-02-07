@@ -68,7 +68,7 @@ function DashboardNavbar({ status, setStatus }) {
                             <i className="bi bi-envelope me-3 fs-4 text-dark"></i>
                             <i onClick={() => setStatus(prev => ({ ...prev, shareLink: !prev.shareLink }))} className={`bi bi-link me-3 fs-4 ${status.shareLink ? 'text-success' : 'text-dark'}`}></i>
                             <i onClick={() => setStatus(prev => ({ ...prev, shareDocs: !prev.shareDocs }))} className={`bi bi-file-earmark-plus-fill me-3 fs-4 ${status.shareDocs ? 'text-success' : 'text-dark'}`}></i>
-                            <i className="bi bi-person-fill fs-4 text-dark"></i>
+                            <i onClick={() => navigate('/profile')} className="bi bi-person-fill fs-4 text-dark"></i>
                             <div className="btn-group ml-3">
                                 {curUser && (<button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                     {curUser.firstName + ' ' + curUser.lastName}

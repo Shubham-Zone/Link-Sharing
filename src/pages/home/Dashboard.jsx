@@ -78,7 +78,7 @@ function Dashboard() {
         try {
             const res = await ReadPost(postId);
             const filteredPosts = posts.filter((post) => post._id !== postId);
-            setPosts(filteredPosts);
+            setPosts(filteredPosts)
             if(res.status === 200) {
                 successAlert('Post marked as read.');
             } else {
@@ -131,7 +131,7 @@ function Dashboard() {
                                     <h4 className="fw-bold text-success">Inbox</h4>
                                     {posts &&
                                         posts.map((post) => (
-                                            <div key={post._id} className="mb-2 card w-100 border-0 shadow-sm rounded-3 overflow-hidden">
+                                            <div key={post._id} className="card w-100 border-0 shadow-sm rounded-3 overflow-hidden">
                                                 <div className="card-body">
                                                     <h5 className="fw-bold text-dark">{post.createrName} (@{post.createrUsername})</h5>
                                                     <h6 className="text-muted">{post.topicName}</h6>

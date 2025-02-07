@@ -70,10 +70,11 @@ export const ReadPost = async (postId) => {
 };
 
 export const fetchPublicPosts = async () => {
+    console.log("Public token is", import.meta.env.VITE_PUBLIC_TOKEN);
     try {
         const res = await axios.get(`${import.meta.env?.VITE_BASE_URL}/public-posts`, {
             headers: {
-                "x-auth-token": token
+                "x-auth-token": import.meta.env?.VITE_PUBLIC_TOKEN
             }
         });
         return res;
